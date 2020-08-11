@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.payu.olamoney:olamoney:1.0.1@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/d26ebdb1b4602a168744e23980f12f48/jetified-olamoney-1.0.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/d26ebdb1b4602a168744e23980f12f48/jetified-olamoney-1.0.1/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.payu.olamoney/olamoney/1.0.1/d3e55173076397ef64dadd6c86a7e4bd81e9e9b2/olamoney-1.0.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.payu.olamoney/olamoney/1.0.1/7847e5ee814d320c376bfde027fb3cb127f0d23a/olamoney-1.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
