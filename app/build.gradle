@@ -38,7 +38,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.payu.india:payu-checkout-pro:1.1.0'
+    implementation 'com.payu.india:payu-checkout-pro:1.1.1'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.payu.olamoney:olamoney:1.0.1'
     implementation 'com.payu.phonepe:phonepe-intent:1.5.2'
