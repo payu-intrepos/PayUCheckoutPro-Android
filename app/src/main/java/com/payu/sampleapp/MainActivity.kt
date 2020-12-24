@@ -6,6 +6,7 @@ import android.os.SystemClock
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.webkit.WebView
 import android.widget.CompoundButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -202,6 +203,9 @@ class MainActivity : AppCompatActivity() {
                             hashGenerationListener.onHashGenerated(hashMap)
                         }
                     }
+                }
+
+                override fun setWebViewProperties(webView: WebView?, bank: Any?) {
                 }
             })
     }
