@@ -8,9 +8,9 @@
     <color name="app_button_color">#2CA6CF</color>
 
     <!-- set below colors for colorPrimary, colorPrimaryDark and colorAccent of UI SDK -->
-<!--    <color name="one_payu_colorPrimary">#B22222</color>-->
-<!--    <color name="one_payu_colorPrimaryDark">#800000</color>-->
-<!--    <color name="one_payu_colorAccent">#008080</color>-->
-<!--    <color name="one_payu_baseTextColor">#ffffff</color>-->
+    <!--    <color name="one_payu_colorPrimary">#B22222</color>-->
+    <!--    <color name="one_payu_colorPrimaryDark">#800000</color>-->
+    <!--    <color name="one_payu_colorAccent">#008080</color>-->
+    <!--    <color name="one_payu_baseTextColor">#ffffff</color>-->
 
 </resources>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Checkout Pro Sample App</string>
+    <string name="app_name">CheckoutProSDK Sample App</string>
     <string name="some_error_occurred">Some error occurred...</string>
     <string name="transaction_cancelled_by_user">Transaction cancelled by user</string>
 </resources>
