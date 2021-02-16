@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.webkit.WebView
+import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,8 @@ import com.payu.checkoutpro.utils.PayUCheckoutProConstants.CP_HASH_STRING
 import com.payu.sampleapp.databinding.ActivityMainBinding
 import com.payu.ui.model.listeners.PayUCheckoutProListener
 import com.payu.ui.model.listeners.PayUHashGenerationListener
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.layout_si_details.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,12 +48,36 @@ class MainActivity : AppCompatActivity() {
     // variable to track event time
     private var mLastClickTime: Long = 0
     private var reviewOrderAdapter: ReviewOrderRecyclerViewAdapter? = null
+    private var billingCycle = arrayOf(
+        "DAILY",
+        "WEEKLY",
+        "MONTHLY",
+        "YEARLY",
+        "ONCE",
+        "ADHOC"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        initializeSIView()
         setInitalData()
         initListeners()
+    }
+
+    private fun initializeSIView() {
+        switch_si_on_off.setOnCheckedChangeListener { buttonView, isChecked -> if(isChecked)
+        { layout_si_details.visibility = View.VISIBLE }
+        else { layout_si_details.visibility = View.GONE }
+        }
+
+        val adapter: ArrayAdapter<*> = ArrayAdapter<Any?>(
+            this,
+            android.R.layout.simple_spinner_item,
+            billingCycle
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        et_billingCycle_value.adapter = adapter
     }
 
     private fun setInitalData() {
@@ -135,6 +162,21 @@ class MainActivity : AppCompatActivity() {
         additionalParamsMap[PayUCheckoutProConstants.CP_PAYMENT_RELATED_DETAILS_FOR_MOBILE_SDK] =
             paymenRelatedDetailsHash
 
+        var siDetails: PayUSIParams? =null
+        if(switch_si_on_off.isChecked) {
+            siDetails  = PayUSIParams.Builder()
+                .setFreeTrial(sp_free_trial.isChecked)
+                .setSIDetails(PayUSIParamsDetails.Builder()
+                    .setBillingAmount(et_billingAmount_value.text.toString())
+                    .setBillingCycle(PayUBillingCycle.valueOf(et_billingCycle_value.selectedItem.toString()))
+                    .setBillingInterval(et_billingInterval_value.text.toString().toInt())
+                    .setPaymentStartDate(et_paymentStartDate_value.text.toString())
+                    .setPaymentEndDate(et_paymentEndDate_value.text.toString())
+                    .setRemarks(et_remarks_value.text.toString())
+                    .build()
+            ).build()
+        }
+
         return PayUPaymentParams.Builder().setAmount(binding.etAmount.text.toString())
             .setIsProduction(binding.radioBtnProduction.isChecked)
             .setKey(binding.etKey.text.toString())
@@ -147,6 +189,7 @@ class MainActivity : AppCompatActivity() {
             .setFurl(binding.etFurl.text.toString())
             .setUserCredential(binding.etUserCredential.text.toString())
             .setAdditionalParams(additionalParamsMap)
+            .setPayUSIParams(siDetails)
             .build()
     }
 

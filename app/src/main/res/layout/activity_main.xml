@@ -607,6 +607,63 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dimen_10dp"
+                        android:layout_marginTop="@dimen/dimen_10dp"
+                        android:layout_marginRight="@dimen/dimen_10dp"
+                        android:padding="@dimen/dimen_10dp"
+                        app:cardBackgroundColor="@color/light_white"
+                        app:cardCornerRadius="@dimen/dimen_3dp"
+                        app:cardElevation="@dimen/dimen_5dp"
+                        app:cardPreventCornerOverlap="false"
+                        app:contentPaddingBottom="@dimen/dimen_10dp"
+                        app:contentPaddingLeft="@dimen/dimen_5dp"
+                        app:contentPaddingRight="@dimen/dimen_5dp"
+                        app:contentPaddingTop="@dimen/dimen_10dp"
+                        card_view:cardElevation="@dimen/dimen_5dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <RelativeLayout
+                                android:id="@+id/rl_si_header"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:id="@+id/tv_pay_via_si"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/pay_via_si"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+
+                                <androidx.appcompat.widget.SwitchCompat
+                                    android:id="@+id/switch_si_on_off"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:gravity="right" />
+
+                            </RelativeLayout>
+
+                            <include
+                                android:id="@+id/layout_si_details"
+                                layout="@layout/layout_si_details"
+                                android:layout_width="match_parent"
+                                android:visibility="gone"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/rl_si_header"
+                                android:layout_marginTop="@dimen/dimen_20dp" />
+                        </RelativeLayout>
+
+
+                    </androidx.cardview.widget.CardView>
+
                     <Button
                         android:id="@+id/pay_now_button"
                         style="@style/ButtonStyle"
