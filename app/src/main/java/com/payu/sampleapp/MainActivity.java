@@ -6,18 +6,23 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.payu.base.models.ErrorResponse;
+import com.payu.base.models.PayUBillingCycle;
 import com.payu.base.models.PayUPaymentParams;
+import com.payu.base.models.PayUSIParams;
+import com.payu.base.models.PayUSIParamsDetails;
 import com.payu.base.models.PaymentMode;
 import com.payu.base.models.PaymentType;
 import com.payu.checkoutpro.PayUCheckoutPro;
@@ -46,13 +51,33 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private long mLastClickTime;
     private ReviewOrderRecyclerViewAdapter reviewOrderAdapter;
+    private String[] billingCycle = {  "DAILY", "WEEKLY", "MONTHLY", "YEARLY", "ONCE", "ADHOC"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        initializeSIView();
         setInitalData();
         initListeners();
+    }
+
+    private void initializeSIView() {
+        binding.switchSiOnOff.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                binding.layoutSiDetails.llSiDetails.setVisibility(View.VISIBLE);
+            } else {
+                binding.layoutSiDetails.llSiDetails.setVisibility(View.GONE);
+            }
+        });
+
+        ArrayAdapter<Object> adapter = new ArrayAdapter<Object>(
+                this,
+                android.R.layout.simple_spinner_item,
+                billingCycle
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ((AppCompatSpinner)findViewById(R.id.et_billingCycle_value)).setAdapter(adapter);
     }
 
     private void setInitalData() {
@@ -242,6 +267,21 @@ public class MainActivity extends AppCompatActivity {
         additionalParams.put(PayUCheckoutProConstants.CP_UDF4, "udf4");
         additionalParams.put(PayUCheckoutProConstants.CP_UDF5, "udf5");
 
+        PayUSIParams siDetails = null;
+        if(binding.switchSiOnOff.isChecked()) {
+            siDetails  = new PayUSIParams.Builder().setFreeTrial(binding.layoutSiDetails.spFreeTrial.isChecked()).setSIDetails(
+                    new PayUSIParamsDetails.Builder()
+                            .setBillingAmount(binding.layoutSiDetails.etBillingAmountValue.getText().toString())
+                            .setBillingCycle(PayUBillingCycle.valueOf(binding.layoutSiDetails.etBillingCycleValue.getSelectedItem().toString()))
+                            .setBillingInterval(Integer.parseInt(binding.layoutSiDetails.etBillingIntervalValue.getText().toString()))
+                            .setPaymentStartDate(binding.layoutSiDetails.etPaymentStartDateValue.getText().toString())
+                            .setPaymentEndDate(binding.layoutSiDetails.etPaymentEndDateValue.getText().toString())
+                            .setRemarks(binding.layoutSiDetails.etRemarksValue.getText().toString())
+                            .build()
+            ).build();
+
+        }
+
         PayUPaymentParams.Builder builder = new PayUPaymentParams.Builder();
         builder.setAmount(binding.etAmount.getText().toString())
                 .setIsProduction(binding.radioBtnProduction.isChecked())
@@ -254,7 +294,8 @@ public class MainActivity extends AppCompatActivity {
                 .setSurl(binding.etSurl.getText().toString())
                 .setFurl(binding.etFurl.getText().toString())
                 .setUserCredential(binding.etKey.getText().toString() + ":john@yopmail.com")
-                .setAdditionalParams(additionalParams);
+                .setAdditionalParams(additionalParams)
+                .setPayUSIParams(siDetails);
         PayUPaymentParams payUPaymentParams = builder.build();
         return payUPaymentParams;
     }
