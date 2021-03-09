@@ -165,16 +165,14 @@ class MainActivity : AppCompatActivity() {
         var siDetails: PayUSIParams? =null
         if(switch_si_on_off.isChecked) {
             siDetails  = PayUSIParams.Builder()
-                .setFreeTrial(sp_free_trial.isChecked)
-                .setSIDetails(PayUSIParamsDetails.Builder()
-                    .setBillingAmount(et_billingAmount_value.text.toString())
-                    .setBillingCycle(PayUBillingCycle.valueOf(et_billingCycle_value.selectedItem.toString()))
-                    .setBillingInterval(et_billingInterval_value.text.toString().toInt())
-                    .setPaymentStartDate(et_paymentStartDate_value.text.toString())
-                    .setPaymentEndDate(et_paymentEndDate_value.text.toString())
-                    .setRemarks(et_remarks_value.text.toString())
-                    .build()
-            ).build()
+                .setIsFreeTrial(sp_free_trial.isChecked)
+                .setBillingAmount(et_billingAmount_value.text.toString())
+                .setBillingCycle(PayUBillingCycle.valueOf(et_billingCycle_value.selectedItem.toString()))
+                .setBillingInterval(et_billingInterval_value.text.toString().toInt())
+                .setPaymentStartDate(et_paymentStartDate_value.text.toString())
+                .setPaymentEndDate(et_paymentEndDate_value.text.toString())
+                .setRemarks(et_remarks_value.text.toString())
+                .build()
         }
 
         return PayUPaymentParams.Builder().setAmount(binding.etAmount.text.toString())
@@ -256,6 +254,7 @@ class MainActivity : AppCompatActivity() {
     private fun getCheckoutProConfig(): PayUCheckoutProConfig {
         val checkoutProConfig = PayUCheckoutProConfig()
         checkoutProConfig.paymentModesOrder = getCheckoutOrderList()
+        checkoutProConfig.offerDetails = getOfferDetailsList()
         checkoutProConfig.showCbToolbar = !binding.switchHideCbToolBar.isChecked
         checkoutProConfig.autoSelectOtp = binding.switchAutoSelectOtp.isChecked
         checkoutProConfig.autoApprove = binding.switchAutoApprove.isChecked
@@ -268,6 +267,28 @@ class MainActivity : AppCompatActivity() {
         checkoutProConfig.merchantName = binding.etMerchantName.text.toString()
         checkoutProConfig.merchantLogo = R.drawable.merchant_logo
         return checkoutProConfig
+    }
+
+    private fun getOfferDetailsList(): ArrayList<PayUOfferDetails> {
+        val offerDetails = ArrayList<PayUOfferDetails>()
+        offerDetails.add(PayUOfferDetails().also {
+            it.offerTitle = " Instant discount of Rs.2"
+            it.offerDescription = "Get Instant dicount of Rs.2 on all Credit and Debit card transactions"
+            it.offerKey = "OfferKey@9227"
+            it.offerPaymentTypes = ArrayList<PaymentType>().also {
+                it.add(PaymentType.CARD)
+            }
+        })
+        offerDetails.add(PayUOfferDetails().also {
+            it.offerTitle = " Instant discount of Rs.2"
+            it.offerDescription = "Get Instant dicount of Rs.2 on all NetBanking transactions"
+            it.offerKey = "TestOffer100@9229"
+            it.offerPaymentTypes = ArrayList<PaymentType>().also {
+                it.add(PaymentType.NB)
+            }
+        })
+
+        return offerDetails
     }
 
     private fun getCheckoutOrderList(): ArrayList<PaymentMode> {
