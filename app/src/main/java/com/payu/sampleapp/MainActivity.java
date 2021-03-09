@@ -20,9 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.snackbar.Snackbar;
 import com.payu.base.models.ErrorResponse;
 import com.payu.base.models.PayUBillingCycle;
+import com.payu.base.models.PayUOfferDetails;
 import com.payu.base.models.PayUPaymentParams;
 import com.payu.base.models.PayUSIParams;
-import com.payu.base.models.PayUSIParamsDetails;
 import com.payu.base.models.PaymentMode;
 import com.payu.base.models.PaymentType;
 import com.payu.checkoutpro.PayUCheckoutPro;
@@ -217,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
     private PayUCheckoutProConfig getCheckoutProConfig() {
         PayUCheckoutProConfig checkoutProConfig = new PayUCheckoutProConfig();
         checkoutProConfig.setPaymentModesOrder(getCheckoutOrderList());
+        checkoutProConfig.setOfferDetails(getOfferDetailsList());
         checkoutProConfig.setShowCbToolbar(!binding.switchHideCbToolBar.isChecked());
         checkoutProConfig.setAutoSelectOtp(binding.switchAutoSelectOtp.isChecked());
         checkoutProConfig.setAutoApprove(binding.switchAutoApprove.isChecked());
@@ -228,6 +229,31 @@ public class MainActivity extends AppCompatActivity {
         if (reviewOrderAdapter != null)
             checkoutProConfig.setCartDetails(reviewOrderAdapter.getOrderDetailsList());
         return checkoutProConfig;
+    }
+
+    private ArrayList<PayUOfferDetails> getOfferDetailsList() {
+        ArrayList<PayUOfferDetails> offerDetails = new ArrayList<>();
+        PayUOfferDetails payUOfferDetails1 = new PayUOfferDetails();
+        payUOfferDetails1.setOfferTitle("Instant discount of Rs.2");
+        payUOfferDetails1.setOfferDescription("Get Instant dicount of Rs.2 on all Credit and Debit card transactions");
+        payUOfferDetails1.setOfferKey("OfferKey@9227");
+
+        ArrayList<PaymentType> offerPaymentTypes1 = new ArrayList<>();
+        offerPaymentTypes1.add(PaymentType.CARD);
+        payUOfferDetails1.setOfferPaymentTypes(offerPaymentTypes1);
+
+        PayUOfferDetails payUOfferDetails2 = new PayUOfferDetails();
+        payUOfferDetails2.setOfferTitle("Instant discount of Rs.2");
+        payUOfferDetails2.setOfferDescription("Get Instant dicount of Rs.2 on all NetBanking transactions");
+        payUOfferDetails2.setOfferKey("TestOffer100@9229");
+
+        ArrayList<PaymentType> offerPaymentTypes2 = new ArrayList<>();
+        offerPaymentTypes2.add(PaymentType.NB);
+        payUOfferDetails2.setOfferPaymentTypes(offerPaymentTypes2);
+
+        offerDetails.add(payUOfferDetails1);
+        offerDetails.add(payUOfferDetails2);
+        return offerDetails;
     }
 
     private ArrayList<PaymentMode> getCheckoutOrderList() {
@@ -244,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showAlertDialog(Object response){
         HashMap<String,Object> result = (HashMap<String, Object>) response;
-        new AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog_Alert)
+        new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setMessage(
                         "Payu's Data : " + result.get(PayUCheckoutProConstants.CP_PAYU_RESPONSE) + "\n\n\n Merchant's Data: " + result.get(
@@ -269,16 +295,14 @@ public class MainActivity extends AppCompatActivity {
 
         PayUSIParams siDetails = null;
         if(binding.switchSiOnOff.isChecked()) {
-            siDetails  = new PayUSIParams.Builder().setFreeTrial(binding.layoutSiDetails.spFreeTrial.isChecked()).setSIDetails(
-                    new PayUSIParamsDetails.Builder()
+            siDetails  = new PayUSIParams.Builder().setIsFreeTrial(binding.layoutSiDetails.spFreeTrial.isChecked())
                             .setBillingAmount(binding.layoutSiDetails.etBillingAmountValue.getText().toString())
                             .setBillingCycle(PayUBillingCycle.valueOf(binding.layoutSiDetails.etBillingCycleValue.getSelectedItem().toString()))
                             .setBillingInterval(Integer.parseInt(binding.layoutSiDetails.etBillingIntervalValue.getText().toString()))
                             .setPaymentStartDate(binding.layoutSiDetails.etPaymentStartDateValue.getText().toString())
                             .setPaymentEndDate(binding.layoutSiDetails.etPaymentEndDateValue.getText().toString())
                             .setRemarks(binding.layoutSiDetails.etRemarksValue.getText().toString())
-                            .build()
-            ).build();
+                            .build();
 
         }
 
