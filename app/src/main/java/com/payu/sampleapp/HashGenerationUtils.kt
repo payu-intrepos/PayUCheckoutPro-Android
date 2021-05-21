@@ -1,6 +1,8 @@
 package com.payu.sampleapp
 
 import java.security.MessageDigest
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 
 object HashGenerationUtils {
 
@@ -10,11 +12,13 @@ This should be done from server side..
 Do not keep salt anywhere in app.
 */
     fun generateHashFromSDK(
-        paymentParams: String,
-        salt: String?
+        hashData: String,
+        salt: String?,
+        merchantSecretKey: String? = null
     ): String? {
 
-        return calculateHash("SHA-512","$paymentParams$salt")
+        return if (merchantSecretKey.isNullOrEmpty()) calculateHash("$hashData$salt")
+        else calculateHmacSha1(hashData, merchantSecretKey)
     }
 
     /**
@@ -22,12 +26,25 @@ Do not keep salt anywhere in app.
      * @param hashString hash string for hash calculation
      * @return Post Data containig the
      * */
-    private fun calculateHash(type: String, hashString: String): String? {
+    private fun calculateHash(hashString: String): String {
         val messageDigest =
-            MessageDigest.getInstance(type)
+            MessageDigest.getInstance("SHA-512")
         messageDigest.update(hashString.toByteArray())
         val mdbytes = messageDigest.digest()
         return getHexString(mdbytes)
+    }
+
+    private fun calculateHmacSha1(hashString: String, key: String): String? {
+        try {
+            val type = "HmacSHA1"
+            val secret = SecretKeySpec(key.toByteArray(), type)
+            val mac: Mac = Mac.getInstance(type)
+            mac.init(secret)
+            val bytes: ByteArray = mac.doFinal(hashString.toByteArray())
+            return getHexString(bytes)
+        } catch (e: Exception){
+            return null
+        }
     }
 
     private fun getHexString(data: ByteArray): String {

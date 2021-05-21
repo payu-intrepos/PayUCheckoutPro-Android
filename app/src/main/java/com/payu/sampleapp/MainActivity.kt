@@ -36,12 +36,15 @@ class MainActivity : AppCompatActivity() {
     private val amount = "1.0"
 
     //Test Key and Salt
-    private val testKey = "gtKFFX"
-    private val testSalt = "eCwWELxi"
+    private val testKey = "IUIaFM"
+    private val testSalt = "67njRYSI"
+    private val merchantAccessKey = "E5ABOXOWAAZNXB6JEF5Z"
+    private val merchantSecretKey = "e425e539233044146a2d185a346978794afd7c66"
+
 
     //Prod Key and Salt
     private val prodKey = "0MQaQP"
-    private val prodSalt = "13p0PXZk"
+    private val prodSalt = "7tVMWdl6"
 
     private lateinit var binding: ActivityMainBinding
 
@@ -123,12 +126,14 @@ class MainActivity : AppCompatActivity() {
         //For testing
         binding.etKey.setText(testKey)
         binding.etSalt.setText(testSalt)
+        binding.etMerchantAccessKey.setText(merchantAccessKey)
     }
 
     private fun updateProdEnvDetails() {
         //For Production
         binding.etKey.setText(prodKey)
         binding.etSalt.setText(prodSalt)
+        binding.etMerchantAccessKey.setText(merchantAccessKey)
     }
 
     fun startPayment(view: View) {
@@ -158,6 +163,13 @@ class MainActivity : AppCompatActivity() {
         additionalParamsMap[PayUCheckoutProConstants.CP_UDF3] = "udf3"
         additionalParamsMap[PayUCheckoutProConstants.CP_UDF4] = "udf4"
         additionalParamsMap[PayUCheckoutProConstants.CP_UDF5] = "udf5"
+
+        //Below params should be passed only when integrating Multi-currency support
+        //TODO Please pass your own Merchant Access Key below as provided by your Key Account Manager at PayU.
+        // Merchant Access Key used here is only for testing purpose.
+        additionalParamsMap[PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY] = binding.etMerchantAccessKey.text.toString()
+
+        //Below hashes are static hashes and can be calculated and passed in additional params
         additionalParamsMap[PayUCheckoutProConstants.CP_VAS_FOR_MOBILE_SDK] = vasForMobileSdkHash
         additionalParamsMap[PayUCheckoutProConstants.CP_PAYMENT_RELATED_DETAILS_FOR_MOBILE_SDK] =
             paymenRelatedDetailsHash
@@ -233,11 +245,26 @@ class MainActivity : AppCompatActivity() {
                         val hashData = map[CP_HASH_STRING]
                         val hashName = map[CP_HASH_NAME]
 
-                        val hash: String? =
-                            HashGenerationUtils.generateHashFromSDK(
+                        var hash: String? = null
+
+                        //Below hash should be calculated only when integrating Multi-currency support. If not integrating MCP
+                        // then no need to have this if check.
+                        if (hashName.equals(PayUCheckoutProConstants.CP_LOOKUP_API_HASH, ignoreCase = true)){
+
+                            //Calculate HmacSHA1 hash using the hashData and merchant secret key
+                            hash = HashGenerationUtils.generateHashFromSDK(
+                                hashData!!,
+                                binding.etSalt.text.toString(),
+                                merchantSecretKey
+                            )
+                        } else {
+                            //calculate SDH-512 hash using hashData and salt
+                            hash = HashGenerationUtils.generateHashFromSDK(
                                 hashData!!,
                                 binding.etSalt.text.toString()
                             )
+                        }
+
                         if (!TextUtils.isEmpty(hash)) {
                             val hashMap: HashMap<String, String?> = HashMap()
                             hashMap[hashName!!] = hash!!
