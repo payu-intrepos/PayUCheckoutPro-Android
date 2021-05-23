@@ -32,9 +32,13 @@ import com.payu.sampleapp.databinding.ActivityMainBinding;
 import com.payu.ui.model.listeners.PayUCheckoutProListener;
 import com.payu.ui.model.listeners.PayUHashGenerationListener;
 
+import java.security.Key;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,10 +48,12 @@ public class MainActivity extends AppCompatActivity {
     private final String surl = "https://payuresponse.firebaseapp.com/success";
     private final String furl = "https://payuresponse.firebaseapp.com/failure";
     private final String amount = "1.0";
-    private final String testKey = "gtKFFX";
-    private final String testSalt = "eCwWELxi";
+    private final String testKey = "IUIaFM";
+    private final String testSalt = "67njRYSI";
+    private final String testMerchantAccessKey = "E5ABOXOWAAZNXB6JEF5Z";
+    private final String testMerchantSecretKey = "e425e539233044146a2d185a346978794afd7c66";
     private final String prodKey = "0MQaQP";
-    private final String prodSalt = "13p0PXZk";
+    private final String prodSalt = "7tVMWdl6";
     private ActivityMainBinding binding;
     private long mLastClickTime;
     private ReviewOrderRecyclerViewAdapter reviewOrderAdapter;
@@ -142,12 +148,14 @@ public class MainActivity extends AppCompatActivity {
         //For testing
         binding.etKey.setText(testKey);
         binding.etSalt.setText(testSalt);
+        binding.etMerchantAccessKey.setText(testMerchantAccessKey);
     }
 
     private void updateProdEnvDetails() {
         //For Production
         binding.etKey.setText(prodKey);
         binding.etSalt.setText(prodSalt);
+        binding.etMerchantAccessKey.setText(testMerchantAccessKey);
     }
 
     public void startPayment(View view) {
@@ -200,7 +208,18 @@ public class MainActivity extends AppCompatActivity {
                         String hashData = valueMap.get(PayUCheckoutProConstants.CP_HASH_STRING);
                         if (!TextUtils.isEmpty(hashName) && !TextUtils.isEmpty(hashData)) {
                             //Generate Hash from your backend here
-                            String hash = calculateHash(hashData + binding.etSalt.getText().toString());
+                            String hash = null;
+                            if (hashName.equalsIgnoreCase(PayUCheckoutProConstants.CP_LOOKUP_API_HASH)){
+                                //Calculate HmacSHA1 HASH for calculating Lookup API Hash
+                                ///Do not generate hash from local, it needs to be calculated from server side only. Here, hashString contains hash created from your server side.
+
+                                hash = calculateHmacSHA1Hash(hashData, testMerchantSecretKey);
+                            } else {
+
+                                //Calculate SHA-512 Hash here
+                                hash = calculateHash(hashData + binding.etSalt.getText().toString());
+                            }
+
                             HashMap<String, String> dataMap = new HashMap<>();
                             dataMap.put(hashName, hash);
                             hashGenerationListener.onHashGenerated(dataMap);
@@ -293,6 +312,11 @@ public class MainActivity extends AppCompatActivity {
         additionalParams.put(PayUCheckoutProConstants.CP_UDF4, "udf4");
         additionalParams.put(PayUCheckoutProConstants.CP_UDF5, "udf5");
 
+        //Below params should be passed only when integrating Multi-currency support
+        //TODO Please pass your own Merchant Access Key below as provided by your Key Account Manager at PayU.
+        // Merchant Access Key used here is only for testing purpose.
+//        additionalParams.put(PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY, binding.etMerchantAccessKey.getText().toString());
+
         PayUSIParams siDetails = null;
         if(binding.switchSiOnOff.isChecked()) {
             siDetails  = new PayUSIParams.Builder().setIsFreeTrial(binding.layoutSiDetails.spFreeTrial.isChecked())
@@ -331,20 +355,48 @@ public class MainActivity extends AppCompatActivity {
      * This should be done from server side..
      * Do not keep salt anywhere in app.
      * */
-    private static String calculateHash(String hashString) {
+    private String calculateHash(String hashString) {
         try {
-            StringBuilder hash = new StringBuilder();
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
             messageDigest.update(hashString.getBytes());
             byte[] mdbytes = messageDigest.digest();
-            for (byte hashByte : mdbytes) {
-                hash.append(Integer.toString((hashByte & 0xff) + 0x100, 16).substring(1));
-            }
-
-            return hash.toString();
+            return getHexString(mdbytes);
         }catch (Exception e){
             e.printStackTrace();
             return "";
         }
+    }
+
+    private String getHexString(byte[] array){
+        StringBuilder hash = new StringBuilder();
+        for (byte hashByte : array) {
+            hash.append(Integer.toString((hashByte & 0xff) + 0x100, 16).substring(1));
+        }
+        return hash.toString();
+    }
+
+    /**
+     * Hash Should be generated from your sever side only.
+     *
+     * Do not use this, you may use this only for testing.
+     * This should be done from server side..
+     * Do not keep salt anywhere in app.
+     * */
+    private String calculateHmacSHA1Hash(String data, String key) {
+        String HMAC_SHA1_ALGORITHM = "HmacSHA1";
+        String result = null;
+
+        try {
+            Key signingKey = new SecretKeySpec(key.getBytes(), HMAC_SHA1_ALGORITHM);
+            Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
+            mac.init(signingKey);
+            byte[] rawHmac = mac.doFinal(data.getBytes());
+            result = getHexString(rawHmac);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }
