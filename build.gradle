@@ -14,9 +14,9 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {url "https://phonepe.mycloudrepo.io/public/repositories/phonepe-intentsdk-android"}
         google()
         jcenter()
-        maven { url "https://phonepe.bintray.com/PhonePeIntentSDK" }
     }
 }
 
