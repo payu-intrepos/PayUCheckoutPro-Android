@@ -167,7 +167,7 @@ class MainActivity : AppCompatActivity() {
         //Below params should be passed only when integrating Multi-currency support
         //TODO Please pass your own Merchant Access Key below as provided by your Key Account Manager at PayU.
         // Merchant Access Key used here is only for testing purpose.
-        additionalParamsMap[PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY] = binding.etMerchantAccessKey.text.toString()
+//        additionalParamsMap[PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY] = binding.etMerchantAccessKey.text.toString()
 
         //Below hashes are static hashes and can be calculated and passed in additional params
         additionalParamsMap[PayUCheckoutProConstants.CP_VAS_FOR_MOBILE_SDK] = vasForMobileSdkHash
