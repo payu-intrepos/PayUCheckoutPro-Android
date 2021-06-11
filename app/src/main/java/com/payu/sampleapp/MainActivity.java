@@ -148,14 +148,12 @@ public class MainActivity extends AppCompatActivity {
         //For testing
         binding.etKey.setText(testKey);
         binding.etSalt.setText(testSalt);
-        binding.etMerchantAccessKey.setText(testMerchantAccessKey);
     }
 
     private void updateProdEnvDetails() {
         //For Production
         binding.etKey.setText(prodKey);
         binding.etSalt.setText(prodSalt);
-        binding.etMerchantAccessKey.setText(testMerchantAccessKey);
     }
 
     public void startPayment(View view) {
@@ -245,6 +243,8 @@ public class MainActivity extends AppCompatActivity {
         checkoutProConfig.setShowExitConfirmationOnCheckoutScreen(!binding.switchDiableUiDialog.isChecked());
         checkoutProConfig.setMerchantName(binding.etMerchantName.getText().toString());
         checkoutProConfig.setMerchantLogo(R.drawable.merchant_logo);
+        checkoutProConfig.setWaitingTime(30000);
+        checkoutProConfig.setMerchantResponseTimeout(30000);
         if (reviewOrderAdapter != null)
             checkoutProConfig.setCartDetails(reviewOrderAdapter.getOrderDetailsList());
         return checkoutProConfig;
@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
         //Below params should be passed only when integrating Multi-currency support
         //TODO Please pass your own Merchant Access Key below as provided by your Key Account Manager at PayU.
         // Merchant Access Key used here is only for testing purpose.
-//        additionalParams.put(PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY, binding.etMerchantAccessKey.getText().toString());
+//        additionalParams.put(PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY, testMerchantAccessKey);
 
         PayUSIParams siDetails = null;
         if(binding.switchSiOnOff.isChecked()) {
