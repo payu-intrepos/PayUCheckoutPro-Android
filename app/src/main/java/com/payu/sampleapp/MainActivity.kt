@@ -126,14 +126,12 @@ class MainActivity : AppCompatActivity() {
         //For testing
         binding.etKey.setText(testKey)
         binding.etSalt.setText(testSalt)
-        binding.etMerchantAccessKey.setText(merchantAccessKey)
     }
 
     private fun updateProdEnvDetails() {
         //For Production
         binding.etKey.setText(prodKey)
         binding.etSalt.setText(prodSalt)
-        binding.etMerchantAccessKey.setText(merchantAccessKey)
     }
 
     fun startPayment(view: View) {
@@ -167,7 +165,7 @@ class MainActivity : AppCompatActivity() {
         //Below params should be passed only when integrating Multi-currency support
         //TODO Please pass your own Merchant Access Key below as provided by your Key Account Manager at PayU.
         // Merchant Access Key used here is only for testing purpose.
-//        additionalParamsMap[PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY] = binding.etMerchantAccessKey.text.toString()
+//        additionalParamsMap[PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY] = merchantAccessKey
 
         //Below hashes are static hashes and can be calculated and passed in additional params
         additionalParamsMap[PayUCheckoutProConstants.CP_VAS_FOR_MOBILE_SDK] = vasForMobileSdkHash
@@ -293,6 +291,8 @@ class MainActivity : AppCompatActivity() {
             !binding.switchDiableUiDialog.isChecked
         checkoutProConfig.merchantName = binding.etMerchantName.text.toString()
         checkoutProConfig.merchantLogo = R.drawable.merchant_logo
+        checkoutProConfig.waitingTime = 3000
+        checkoutProConfig.merchantResponseTimeout = 3000
         return checkoutProConfig
     }
 

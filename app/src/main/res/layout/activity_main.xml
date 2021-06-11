@@ -164,28 +164,6 @@
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
-                                android:id="@+id/tilMerchantAccessKey"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/dimen_10dp"
-                                android:hint="Enter Merchant Access Key"
-                                app:errorEnabled="false"
-                                app:hintEnabled="true">
-
-                                <EditText
-                                    android:id="@+id/etMerchantAccessKey"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginBottom="10dp"
-                                    android:imeOptions="actionNext"
-                                    android:inputType="text"
-                                    android:maxLines="1"
-                                    android:nextFocusDown="@+id/card_name_et"
-                                    android:textColor="@color/payumoney_black"
-                                    android:textSize="16sp" />
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                            <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/tilAmount"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
