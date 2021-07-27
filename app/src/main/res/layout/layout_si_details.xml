@@ -238,4 +238,46 @@
             android:layout_height="wrap_content"
             android:layout_weight="5" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_billingRule"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:enabled="false"
+            android:focusable="false"
+            android:text="@string/billingRule"
+            android:textColor="@android:color/holo_blue_light" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/et_billingRule_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_billingLimit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:enabled="false"
+            android:focusable="false"
+            android:text="@string/billingLimit"
+            android:textColor="@android:color/holo_blue_light" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/et_billingLimit_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5" />
+    </LinearLayout>
 </LinearLayout>

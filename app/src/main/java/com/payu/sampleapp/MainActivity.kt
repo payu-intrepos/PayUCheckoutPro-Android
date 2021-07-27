@@ -59,6 +59,16 @@ class MainActivity : AppCompatActivity() {
         "ONCE",
         "ADHOC"
     )
+    private var billingRule = arrayOf(
+        "MAX",
+        "EXACT"
+    )
+
+    private var billingLimit = arrayOf(
+        "ON",
+        "BEFORE",
+        "AFTER"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +91,17 @@ class MainActivity : AppCompatActivity() {
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         et_billingCycle_value.adapter = adapter
+        val billingRuleAdapter : ArrayAdapter<*> = ArrayAdapter<Any?>(
+            this, android.R.layout.simple_spinner_item, billingRule
+        )
+        billingRuleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        et_billingRule_value.adapter = billingRuleAdapter
+
+        val billingLimitAdapter : ArrayAdapter<*> = ArrayAdapter<Any?>(
+            this, android.R.layout.simple_spinner_item, billingLimit
+        )
+        billingLimitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        et_billingLimit_value.adapter = billingLimitAdapter
     }
 
     private fun setInitalData() {
@@ -182,6 +203,8 @@ class MainActivity : AppCompatActivity() {
                 .setPaymentStartDate(et_paymentStartDate_value.text.toString())
                 .setPaymentEndDate(et_paymentEndDate_value.text.toString())
                 .setRemarks(et_remarks_value.text.toString())
+                .setBillingLimit(PayuBillingLimit.valueOf(et_billingLimit_value.selectedItem.toString()))
+                .setBillingRule(PayuBillingRule.valueOf(et_billingRule_value.selectedItem.toString()))
                 .build()
         }
 
