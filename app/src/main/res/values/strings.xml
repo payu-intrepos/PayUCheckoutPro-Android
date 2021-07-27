@@ -14,4 +14,6 @@
     <string name="remarks">remarks</string>
     <string name="si_date_hint">YYYY-MM-DD</string>
     <string name="free_trial">Free Trial</string>
+    <string name="billingRule">billingRule</string>
+    <string name="billingLimit">billingLimit</string>
 </resources>
