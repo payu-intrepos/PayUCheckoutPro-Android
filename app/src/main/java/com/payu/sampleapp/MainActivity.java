@@ -25,6 +25,8 @@ import com.payu.base.models.PayUPaymentParams;
 import com.payu.base.models.PayUSIParams;
 import com.payu.base.models.PaymentMode;
 import com.payu.base.models.PaymentType;
+import com.payu.base.models.PayuBillingLimit;
+import com.payu.base.models.PayuBillingRule;
 import com.payu.checkoutpro.PayUCheckoutPro;
 import com.payu.checkoutpro.models.PayUCheckoutProConfig;
 import com.payu.checkoutpro.utils.PayUCheckoutProConstants;
@@ -57,7 +59,9 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private long mLastClickTime;
     private ReviewOrderRecyclerViewAdapter reviewOrderAdapter;
-    private String[] billingCycle = {  "DAILY", "WEEKLY", "MONTHLY", "YEARLY", "ONCE", "ADHOC"};
+    private final String[] billingCycle = {  "DAILY", "WEEKLY", "MONTHLY", "YEARLY", "ONCE", "ADHOC"};
+    private final String[] billingRule = {"MAX", "EXACT"};
+    private final String[] billingLimit = {"ON", "BEFORE", "AFTER"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +88,14 @@ public class MainActivity extends AppCompatActivity {
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ((AppCompatSpinner)findViewById(R.id.et_billingCycle_value)).setAdapter(adapter);
+
+        ArrayAdapter<String> billingRuleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, billingRule);
+        billingRuleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.layoutSiDetails.etBillingRuleValue.setAdapter(billingRuleAdapter);
+
+        ArrayAdapter<String> billingLimitAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, billingLimit);
+        billingLimitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.layoutSiDetails.etBillingLimitValue.setAdapter(billingLimitAdapter);
     }
 
     private void setInitalData() {
@@ -320,13 +332,15 @@ public class MainActivity extends AppCompatActivity {
         PayUSIParams siDetails = null;
         if(binding.switchSiOnOff.isChecked()) {
             siDetails  = new PayUSIParams.Builder().setIsFreeTrial(binding.layoutSiDetails.spFreeTrial.isChecked())
-                            .setBillingAmount(binding.layoutSiDetails.etBillingAmountValue.getText().toString())
-                            .setBillingCycle(PayUBillingCycle.valueOf(binding.layoutSiDetails.etBillingCycleValue.getSelectedItem().toString()))
-                            .setBillingInterval(Integer.parseInt(binding.layoutSiDetails.etBillingIntervalValue.getText().toString()))
-                            .setPaymentStartDate(binding.layoutSiDetails.etPaymentStartDateValue.getText().toString())
-                            .setPaymentEndDate(binding.layoutSiDetails.etPaymentEndDateValue.getText().toString())
-                            .setRemarks(binding.layoutSiDetails.etRemarksValue.getText().toString())
-                            .build();
+                    .setBillingAmount(binding.layoutSiDetails.etBillingAmountValue.getText().toString())
+                    .setBillingCycle(PayUBillingCycle.valueOf(binding.layoutSiDetails.etBillingCycleValue.getSelectedItem().toString()))
+                    .setBillingInterval(Integer.parseInt(binding.layoutSiDetails.etBillingIntervalValue.getText().toString()))
+                    .setPaymentStartDate(binding.layoutSiDetails.etPaymentStartDateValue.getText().toString())
+                    .setPaymentEndDate(binding.layoutSiDetails.etPaymentEndDateValue.getText().toString())
+                    .setRemarks(binding.layoutSiDetails.etRemarksValue.getText().toString())
+                    .setBillingLimit(PayuBillingLimit.valueOf(binding.layoutSiDetails.etBillingLimitValue.getSelectedItem().toString()))
+                    .setBillingRule(PayuBillingRule.valueOf(binding.layoutSiDetails.etBillingRuleValue.getSelectedItem().toString()))
+                    .build();
 
         }
 

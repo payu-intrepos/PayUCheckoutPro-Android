@@ -12,6 +12,8 @@
     <string name="paymentStartDate">paymentStartDate</string>
     <string name="paymentEndDate">paymentEndDate</string>
     <string name="remarks">remarks</string>
+    <string name="billingRule">billingRule</string>
+    <string name="billingLimit">billingLimit</string>
     <string name="si_date_hint">YYYY-MM-DD</string>
     <string name="free_trial">Free Trial</string>
 </resources>
