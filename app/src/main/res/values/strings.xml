@@ -16,4 +16,6 @@
     <string name="free_trial">Free Trial</string>
     <string name="billingRule">billingRule</string>
     <string name="billingLimit">billingLimit</string>
+    <string name="custom_note">Custom Note</string>
+    <string name="custom_note_category">Note Category</string>
 </resources>

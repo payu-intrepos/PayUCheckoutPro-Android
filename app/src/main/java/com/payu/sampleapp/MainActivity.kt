@@ -24,6 +24,7 @@ import com.payu.sampleapp.databinding.ActivityMainBinding
 import com.payu.ui.model.listeners.PayUCheckoutProListener
 import com.payu.ui.model.listeners.PayUHashGenerationListener
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.custome_note.*
 import kotlinx.android.synthetic.main.layout_si_details.*
 
 class MainActivity : AppCompatActivity() {
@@ -69,11 +70,21 @@ class MainActivity : AppCompatActivity() {
         "BEFORE",
         "AFTER"
     )
+    private var noteCategory = arrayOf(
+        "CARD",
+        "NB",
+        "WALLET",
+        "UPI",
+        "EMI",
+        "COMMON",
+        "NULL"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         initializeSIView()
+        setCustomeNote()
         setInitalData()
         initListeners()
     }
@@ -102,6 +113,13 @@ class MainActivity : AppCompatActivity() {
         )
         billingLimitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         et_billingLimit_value.adapter = billingLimitAdapter
+    }
+    private fun setCustomeNote(){
+        val noteCategoryAdapter : ArrayAdapter<*> = ArrayAdapter<Any?>(
+            this,android.R.layout.simple_spinner_item,noteCategory
+        )
+        noteCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        et_custom_note_category_value.adapter = noteCategoryAdapter
     }
 
     private fun setInitalData() {
@@ -316,6 +334,7 @@ class MainActivity : AppCompatActivity() {
         checkoutProConfig.merchantLogo = R.drawable.merchant_logo
         checkoutProConfig.waitingTime = 3000
         checkoutProConfig.merchantResponseTimeout = 3000
+        checkoutProConfig.customNoteDetails = getCustomeNoteDetails()
         return checkoutProConfig
     }
 
@@ -386,5 +405,39 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(
                 android.R.string.ok
             ) { dialog, cancelButton -> dialog.dismiss() }.show()
+    }
+
+    private fun getCustomeNoteDetails(): ArrayList<CustomNote>{
+        val customNote = ArrayList<CustomNote>()
+
+        if (!(et_custom_note_category_value.selectedItem.toString().equals("NULL") ||et_custom_note_category_value.selectedItem.toString().equals("COMMON")) ) {
+            val noteCategory = ArrayList<PaymentType>().also {
+                it.add(PaymentType.valueOf(et_custom_note_category_value.selectedItem.toString()))
+            }
+            customNote.add(CustomNote(et_custom_note_value.text.toString(),noteCategory))
+//                .also {
+//                it.custom_note = et_custom_note_value.text.toString()
+//                it.custom_note_category = ArrayList<PaymentType>().also {
+//                    it.add(PaymentType.valueOf(et_custom_note_category_value.selectedItem.toString()))
+//                it.add(PaymentType.NB)
+//                it.add(PaymentType.WALLET)
+//                it.add(PaymentType.UPI)
+//                it.add(PaymentType.EMI)
+//                }
+//            })
+        }else if (et_custom_note_category_value.selectedItem.toString().equals("NULL")){
+            customNote.add(CustomNote(et_custom_note_value.text.toString(),null))
+        }else{
+            val noteCategory = ArrayList<PaymentType>().also {
+                it.add(PaymentType.CARD)
+                it.add(PaymentType.NB)
+                it.add(PaymentType.UPI)
+                it.add(PaymentType.WALLET)
+                it.add(PaymentType.EMI)
+            }
+            customNote.add(CustomNote(et_custom_note_value.text.toString(),noteCategory))
+        }
+
+        return customNote;
     }
 }

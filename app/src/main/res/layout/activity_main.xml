@@ -606,7 +606,8 @@
                             </LinearLayout>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
-
+                    <include layout="@layout/custome_note"
+                        android:visibility="visible"/>
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
