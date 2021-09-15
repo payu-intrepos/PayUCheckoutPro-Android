@@ -16,4 +16,6 @@
     <string name="billingLimit">billingLimit</string>
     <string name="si_date_hint">YYYY-MM-DD</string>
     <string name="free_trial">Free Trial</string>
+    <string name="custom_note">Custom Note</string>
+    <string name="custom_note_category">Note Category</string>
 </resources>

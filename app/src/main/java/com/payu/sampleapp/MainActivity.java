@@ -6,8 +6,11 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.EdgeEffect;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import androidx.annotation.Nullable;
@@ -18,6 +21,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.payu.base.models.CustomNote;
 import com.payu.base.models.ErrorResponse;
 import com.payu.base.models.PayUBillingCycle;
 import com.payu.base.models.PayUOfferDetails;
@@ -62,12 +66,14 @@ public class MainActivity extends AppCompatActivity {
     private final String[] billingCycle = {  "DAILY", "WEEKLY", "MONTHLY", "YEARLY", "ONCE", "ADHOC"};
     private final String[] billingRule = {"MAX", "EXACT"};
     private final String[] billingLimit = {"ON", "BEFORE", "AFTER"};
+    private final String[] noteCategory = {"CARD", "NB", "WALLET", "UPI", "EMI", "COMMON", "NULL"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         initializeSIView();
+        setCustomeNote();
         setInitalData();
         initListeners();
     }
@@ -96,6 +102,12 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> billingLimitAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, billingLimit);
         billingLimitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.layoutSiDetails.etBillingLimitValue.setAdapter(billingLimitAdapter);
+    }
+
+    private void setCustomeNote(){
+        ArrayAdapter<String> noteCategoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,noteCategory);
+        noteCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ((AppCompatSpinner)findViewById(R.id.et_custom_note_category_value)).setAdapter(noteCategoryAdapter);
     }
 
     private void setInitalData() {
@@ -257,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
         checkoutProConfig.setMerchantLogo(R.drawable.merchant_logo);
         checkoutProConfig.setWaitingTime(30000);
         checkoutProConfig.setMerchantResponseTimeout(30000);
+        checkoutProConfig.setCustomNoteDetails(getCustomeNoteList());
         if (reviewOrderAdapter != null)
             checkoutProConfig.setCartDetails(reviewOrderAdapter.getOrderDetailsList());
         return checkoutProConfig;
@@ -413,4 +426,37 @@ public class MainActivity extends AppCompatActivity {
 
         return result;
     }
+
+    public ArrayList<CustomNote> getCustomeNoteList(){
+
+        ArrayList<CustomNote> customNote = new ArrayList<>();
+       if(!(((AppCompatSpinner)findViewById(R.id.et_custom_note_category_value)).getSelectedItem().toString().equalsIgnoreCase("NULL") && ((AppCompatSpinner)findViewById(R.id.et_custom_note_category_value)).getSelectedItem().toString().equalsIgnoreCase("COMMON"))){
+            ArrayList<PaymentType> noteCategory = new ArrayList<>();
+            noteCategory.add( PaymentType.valueOf(((AppCompatSpinner)findViewById(R.id.et_custom_note_category_value)).getSelectedItem().toString()));
+            CustomNote customNote1 = new CustomNote(((EditText)findViewById(R.id.et_custom_note_value)).getText().toString(), noteCategory);
+            customNote1.setCustom_note(((EditText)findViewById(R.id.et_custom_note_value)).getText().toString());
+            customNote1.setCustom_note_category(noteCategory);
+            customNote.add(customNote1);
+        }
+        else if(((AppCompatSpinner)findViewById(R.id.et_custom_note_category_value)).getSelectedItem().toString().equalsIgnoreCase("NULL")){
+            CustomNote customNote1 = new CustomNote(((EditText)findViewById(R.id.et_custom_note_value)).getText().toString(), null);
+            customNote1.setCustom_note(((EditText)findViewById(R.id.et_custom_note_value)).getText().toString());
+            customNote1.setCustom_note_category(null);
+            customNote.add(customNote1);
+        }else {
+            ArrayList<PaymentType> noteCategory = new ArrayList<>();
+            noteCategory.add( PaymentType.CARD);
+            noteCategory.add(PaymentType.NB);
+            noteCategory.add(PaymentType.UPI);
+            noteCategory.add(PaymentType.WALLET);
+            noteCategory.add(PaymentType.EMI);
+            CustomNote customNote1 = new CustomNote(((EditText)findViewById(R.id.et_custom_note_value)).getText().toString(), noteCategory);
+            customNote1.setCustom_note(((EditText)findViewById(R.id.et_custom_note_value)).getText().toString());
+            customNote1.setCustom_note_category(noteCategory);
+            customNote.add(customNote1);
+        }
+
+        return customNote;
+    }
+
 }
