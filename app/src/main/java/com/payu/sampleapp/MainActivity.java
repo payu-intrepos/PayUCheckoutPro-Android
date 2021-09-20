@@ -55,11 +55,11 @@ public class MainActivity extends AppCompatActivity {
     private final String furl = "https://payuresponse.firebaseapp.com/failure";
     private final String amount = "1.0";
     private final String testKey = "IUIaFM";
-    private final String testSalt = "67njRYSI";
+    private final String testSalt = "<Please_add_salt_here>";
     private final String testMerchantAccessKey = "E5ABOXOWAAZNXB6JEF5Z";
     private final String testMerchantSecretKey = "e425e539233044146a2d185a346978794afd7c66";
     private final String prodKey = "0MQaQP";
-    private final String prodSalt = "7tVMWdl6";
+    private final String prodSalt = "<Please_add_salt_here>";
     private ActivityMainBinding binding;
     private long mLastClickTime;
     private ReviewOrderRecyclerViewAdapter reviewOrderAdapter;
