@@ -38,14 +38,14 @@ class MainActivity : AppCompatActivity() {
 
     //Test Key and Salt
     private val testKey = "IUIaFM"
-    private val testSalt = "67njRYSI"
+    private val testSalt = "<Please_add_salt_here>"
     private val merchantAccessKey = "E5ABOXOWAAZNXB6JEF5Z"
     private val merchantSecretKey = "e425e539233044146a2d185a346978794afd7c66"
 
 
     //Prod Key and Salt
     private val prodKey = "0MQaQP"
-    private val prodSalt = "7tVMWdl6"
+    private val prodSalt = "<Please_add_salt_here>"
 
     private lateinit var binding: ActivityMainBinding
 
