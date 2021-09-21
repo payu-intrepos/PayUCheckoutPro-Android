@@ -56,8 +56,13 @@ public class MainActivity extends AppCompatActivity {
     private final String amount = "1.0";
     private final String testKey = "IUIaFM";
     private final String testSalt = "<Please_add_salt_here>";
-    private final String testMerchantAccessKey = "E5ABOXOWAAZNXB6JEF5Z";
-    private final String testMerchantSecretKey = "e425e539233044146a2d185a346978794afd7c66";
+    /**
+     * Enter below keys when integrating Multi Currency Payments.
+     * To get these credentials, please reach out to your Key Account Manager at PayU
+     * */
+    private final String testMerchantAccessKey = "<Please_add_your_merchant_access_key>";
+    private final String testMerchantSecretKey = "<Please_add_your_merchant_secret_key>";
+
     private final String prodKey = "0MQaQP";
     private final String prodSalt = "<Please_add_salt_here>";
     private ActivityMainBinding binding;
@@ -339,7 +344,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Below params should be passed only when integrating Multi-currency support
         //TODO Please pass your own Merchant Access Key below as provided by your Key Account Manager at PayU.
-        // Merchant Access Key used here is only for testing purpose.
 //        additionalParams.put(PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY, testMerchantAccessKey);
 
         PayUSIParams siDetails = null;
