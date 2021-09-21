@@ -14,6 +14,5 @@ OTP Assist for faster and improved OTP authentication
 Refer integration doc : https://payumobile.gitbook.io/sdk-integration/android/payucheckoutpro
 
 
-For Hash generation salt - 
-For hash generation testing salt needs to be put in HASH geenration method and one set of test creds can be found on gitbook- https://app.gitbook.com/@payumobile/s/sdk-integration/test-merchant-list
-
+For hash generation testing salt needs to be put in HASH generation method and one set of test creds can be found on gitbook- 
+ https://payumobile.gitbook.io/sdk-integration/test-merchant-list
