@@ -39,8 +39,12 @@ class MainActivity : AppCompatActivity() {
     //Test Key and Salt
     private val testKey = "IUIaFM"
     private val testSalt = "<Please_add_salt_here>"
-    private val merchantAccessKey = "E5ABOXOWAAZNXB6JEF5Z"
-    private val merchantSecretKey = "e425e539233044146a2d185a346978794afd7c66"
+    /**
+     * Enter below keys when integrating Multi Currency Payments.
+     * To get these credentials, please reach out to your Key Account Manager at PayU
+     * */
+    private val merchantAccessKey = "<Please_add_your_merchant_access_key>"
+    private val merchantSecretKey = "<Please_add_your_merchant_secret_key>"
 
 
     //Prod Key and Salt
@@ -203,7 +207,6 @@ class MainActivity : AppCompatActivity() {
 
         //Below params should be passed only when integrating Multi-currency support
         //TODO Please pass your own Merchant Access Key below as provided by your Key Account Manager at PayU.
-        // Merchant Access Key used here is only for testing purpose.
 //        additionalParamsMap[PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY] = merchantAccessKey
 
         //Below hashes are static hashes and can be calculated and passed in additional params
