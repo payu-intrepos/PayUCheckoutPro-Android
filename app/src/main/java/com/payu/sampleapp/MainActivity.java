@@ -21,6 +21,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.payu.base.models.CardType;
 import com.payu.base.models.CustomNote;
 import com.payu.base.models.ErrorResponse;
 import com.payu.base.models.PayUBillingCycle;
@@ -264,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
         PayUCheckoutProConfig checkoutProConfig = new PayUCheckoutProConfig();
         checkoutProConfig.setPaymentModesOrder(getCheckoutOrderList());
         checkoutProConfig.setOfferDetails(getOfferDetailsList());
+//        checkoutProConfig.setEnforcePaymentList(getEnforcePaymentList());
         checkoutProConfig.setShowCbToolbar(!binding.switchHideCbToolBar.isChecked());
         checkoutProConfig.setAutoSelectOtp(binding.switchAutoSelectOtp.isChecked());
         checkoutProConfig.setAutoApprove(binding.switchAutoApprove.isChecked());
@@ -278,6 +280,19 @@ public class MainActivity extends AppCompatActivity {
         if (reviewOrderAdapter != null)
             checkoutProConfig.setCartDetails(reviewOrderAdapter.getOrderDetailsList());
         return checkoutProConfig;
+    }
+
+    private ArrayList<HashMap<String, String>> getEnforcePaymentList() {
+        ArrayList<HashMap<String,String>> enforceList = new ArrayList();
+      /*  HashMap<String,String> map = new HashMap<>();
+        map.put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.WALLET.name());
+        enforceList.add(map);*/
+
+        HashMap<String,String> map = new HashMap<>();
+        map.put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.CARD.name());
+        map.put(PayUCheckoutProConstants.CP_CARD_TYPE, CardType.CC.name());
+        enforceList.add(map);
+        return enforceList;
     }
 
     private ArrayList<PayUOfferDetails> getOfferDetailsList() {
