@@ -209,6 +209,9 @@ class MainActivity : AppCompatActivity() {
         //TODO Please pass your own Merchant Access Key below as provided by your Key Account Manager at PayU.
 //        additionalParamsMap[PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY] = merchantAccessKey
 
+        //Below param should be passed only when sodexo payment option is enabled and to show saved sodexo card
+//        additionalParamsMap[PayUCheckoutProConstants.SODEXO_SOURCE_ID] = sodesosrcid  // merchant has to pass this
+
         //Below hashes are static hashes and can be calculated and passed in additional params
         additionalParamsMap[PayUCheckoutProConstants.CP_VAS_FOR_MOBILE_SDK] = vasForMobileSdkHash
         additionalParamsMap[PayUCheckoutProConstants.CP_PAYMENT_RELATED_DETAILS_FOR_MOBILE_SDK] =
