@@ -361,6 +361,10 @@ public class MainActivity extends AppCompatActivity {
         //TODO Please pass your own Merchant Access Key below as provided by your Key Account Manager at PayU.
 //        additionalParams.put(PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY, testMerchantAccessKey);
 
+//        Below params should be passed only when sodexo payment option is enabled and want to show saved sodexo card
+        //TODO Please pass sodexosrcid for sodexo card which will be recieved in new sodexo card txn response
+//        additionalParams.put(PayUCheckoutProConstants.CP_MERCHANT_ACCESS_KEY, sodexosrcid);
+
         PayUSIParams siDetails = null;
         if(binding.switchSiOnOff.isChecked()) {
             siDetails  = new PayUSIParams.Builder().setIsFreeTrial(binding.layoutSiDetails.spFreeTrial.isChecked())
