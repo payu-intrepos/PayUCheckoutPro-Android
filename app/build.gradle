@@ -50,4 +50,5 @@ dependencies {
     implementation 'in.payu:olamoney:1.1.0'
     implementation 'in.payu:phonepe-intent:1.6.1'
     implementation 'in.payu:payu-gpay:1.4.0'
+    implementation 'in.payu:native-otp-assist:1.2.0'
 }
