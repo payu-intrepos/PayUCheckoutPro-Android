@@ -21,6 +21,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.payu.base.models.CardScheme;
 import com.payu.base.models.CardType;
 import com.payu.base.models.CustomNote;
 import com.payu.base.models.ErrorResponse;
@@ -265,6 +266,7 @@ public class MainActivity extends AppCompatActivity {
         PayUCheckoutProConfig checkoutProConfig = new PayUCheckoutProConfig();
         checkoutProConfig.setPaymentModesOrder(getCheckoutOrderList());
         checkoutProConfig.setOfferDetails(getOfferDetailsList());
+        // uncomment below code for performing enforcement
 //        checkoutProConfig.setEnforcePaymentList(getEnforcePaymentList());
         checkoutProConfig.setShowCbToolbar(!binding.switchHideCbToolBar.isChecked());
         checkoutProConfig.setAutoSelectOtp(binding.switchAutoSelectOtp.isChecked());
@@ -284,14 +286,16 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<HashMap<String, String>> getEnforcePaymentList() {
         ArrayList<HashMap<String,String>> enforceList = new ArrayList();
-      /*  HashMap<String,String> map = new HashMap<>();
-        map.put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.WALLET.name());
-        enforceList.add(map);*/
+       HashMap<String,String> map1 = new HashMap<>();
+        map1.put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.WALLET.name());
+        map1.put(PayUCheckoutProConstants.ENFORCED_IBIBOCODE, "AXIB");
+        enforceList.add(map1);
 
-        HashMap<String,String> map = new HashMap<>();
-        map.put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.CARD.name());
-        map.put(PayUCheckoutProConstants.CP_CARD_TYPE, CardType.CC.name());
-        enforceList.add(map);
+        HashMap<String,String> map2 = new HashMap<>();
+        map2.put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.CARD.name());
+        map2.put(PayUCheckoutProConstants.CP_CARD_TYPE, CardType.CC.name());
+        map2.put(PayUCheckoutProConstants.CP_CARD_SCHEME, CardScheme.MAST.name());
+        enforceList.add(map2);
         return enforceList;
     }
 
