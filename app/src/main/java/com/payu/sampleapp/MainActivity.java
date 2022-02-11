@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<HashMap<String, String>> getEnforcePaymentList() {
         ArrayList<HashMap<String,String>> enforceList = new ArrayList();
        HashMap<String,String> map1 = new HashMap<>();
-        map1.put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.WALLET.name());
+        map1.put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.NB.name());
         map1.put(PayUCheckoutProConstants.ENFORCED_IBIBOCODE, "AXIB");
         enforceList.add(map1);
 
