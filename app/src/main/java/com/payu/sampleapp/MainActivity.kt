@@ -341,18 +341,22 @@ class MainActivity : AppCompatActivity() {
         checkoutProConfig.waitingTime = 3000
         checkoutProConfig.merchantResponseTimeout = 3000
         checkoutProConfig.customNoteDetails = getCustomeNoteDetails()
+        // uncomment below code to perform enforcement
 //        checkoutProConfig.enforcePaymentList = getEnforcePaymentList()
         return checkoutProConfig
     }
 
     private fun getEnforcePaymentList(): ArrayList<HashMap<String, String>> {
         val enforceList = ArrayList<HashMap<String,String>>()
-/*        enforceList.add(HashMap<String,String>().apply {
-            put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.WALLET.name)
-        })*/
+        enforceList.add(HashMap<String,String>().apply {
+            put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.NB.name)
+             put(PayUCheckoutProConstants.ENFORCED_IBIBOCODE,"AXIB")
+
+        })
         enforceList.add(HashMap<String,String>().apply {
             put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.CARD.name)
             put(PayUCheckoutProConstants.CP_CARD_TYPE, CardType.CC.name)
+            put(PayUCheckoutProConstants.CP_CARD_SCHEME, CardScheme.MAST.name)
         })
         return enforceList
     }
@@ -459,4 +463,5 @@ class MainActivity : AppCompatActivity() {
 
         return customNote;
     }
+
 }
