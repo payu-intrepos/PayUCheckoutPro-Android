@@ -270,7 +270,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onError(errorResponse: ErrorResponse) {
 
                     val errorMessage: String
-                    if (errorResponse != null && errorResponse.errorMessage != null && errorResponse.errorMessage!!.isNotEmpty())
+                    if (errorResponse.errorMessage != null && errorResponse.errorMessage!!.isNotEmpty())
                         errorMessage = errorResponse.errorMessage!!
                     else
                         errorMessage = resources.getString(R.string.some_error_occurred)
