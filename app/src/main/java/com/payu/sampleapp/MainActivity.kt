@@ -290,7 +290,7 @@ class MainActivity : AppCompatActivity() {
                         val hashData = map[CP_HASH_STRING]
                         val hashName = map[CP_HASH_NAME]
 
-                        var hash: String? = null
+                        var hash: String?
 
                         //Below hash should be calculated only when integrating Multi-currency support. If not integrating MCP
                         // then no need to have this if check.
