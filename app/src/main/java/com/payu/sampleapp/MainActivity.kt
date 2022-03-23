@@ -461,7 +461,7 @@ class MainActivity : AppCompatActivity() {
             customNote.add(CustomNote(et_custom_note_value.text.toString(),noteCategory))
         }
 
-        return customNote;
+        return customNote
     }
 
 }
