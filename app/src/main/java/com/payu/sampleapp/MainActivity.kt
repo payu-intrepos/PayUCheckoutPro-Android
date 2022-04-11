@@ -5,12 +5,13 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.text.TextUtils
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.webkit.WebView
-import android.widget.ArrayAdapter
-import android.widget.CompoundButton
-import android.widget.RadioGroup
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatSpinner
+import androidx.appcompat.widget.SwitchCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -20,12 +21,15 @@ import com.payu.checkoutpro.models.PayUCheckoutProConfig
 import com.payu.checkoutpro.utils.PayUCheckoutProConstants
 import com.payu.checkoutpro.utils.PayUCheckoutProConstants.CP_HASH_NAME
 import com.payu.checkoutpro.utils.PayUCheckoutProConstants.CP_HASH_STRING
+import com.payu.paymentparamhelper.PayuConstants
 import com.payu.sampleapp.databinding.ActivityMainBinding
 import com.payu.ui.model.listeners.PayUCheckoutProListener
 import com.payu.ui.model.listeners.PayUHashGenerationListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.custome_note.*
 import kotlinx.android.synthetic.main.layout_si_details.*
+import org.json.JSONException
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
 
@@ -84,13 +88,62 @@ class MainActivity : AppCompatActivity() {
         "NULL"
     )
 
+    private var splitPaymentType = arrayOf(
+        "absolute",
+        "percentage"
+    )
+
+    private var switchSplitPayment: SwitchCompat? = null
+    private var spSplitPaymentType: AppCompatSpinner? = null
+    private var llSplitPaymentDetails: LinearLayout? = null
+    private var btnSplitMore: Button? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         initializeSIView()
+        initializeSplitPaymentViews()
         setCustomeNote()
         setInitalData()
         initListeners()
+    }
+
+    private fun addSplitPaymentDetailedView() {
+        val inflate: View =
+            LayoutInflater.from(this).inflate(R.layout.layout_split_payment_details, null)
+        llSplitPaymentDetails?.addView(inflate, llSplitPaymentDetails!!.childCount)
+    }
+
+    private fun initializeSplitPaymentViews() {
+        switchSplitPayment = findViewById(R.id.switch_split_payment)
+        llSplitPaymentDetails = findViewById(R.id.ll_split_payment_details)
+        btnSplitMore = findViewById(R.id.btn_split_more)
+
+        switchSplitPayment?.setOnCheckedChangeListener { buttonView: CompoundButton?, isChecked: Boolean ->
+            addSplitPaymentDetailedView()
+            if (isChecked) {
+                findViewById<View>(R.id.ll_split_type).visibility = View.VISIBLE
+                findViewById<View>(R.id.ll_split_payment_details).visibility = View.VISIBLE
+                btnSplitMore?.visibility = View.VISIBLE
+            } else {
+                findViewById<View>(R.id.ll_split_type).visibility = View.GONE
+                findViewById<View>(R.id.ll_split_payment_details).visibility = View.GONE
+                llSplitPaymentDetails?.removeAllViews()
+                btnSplitMore?.visibility = View.GONE
+            }
+        }
+
+        btnSplitMore?.setOnClickListener { addSplitPaymentDetailedView() }
+        spSplitPaymentType = findViewById(R.id.et_split_payment_value)
+
+        val adapter: ArrayAdapter<*> = ArrayAdapter<Any?>(
+            this,
+            android.R.layout.simple_spinner_item,
+            splitPaymentType
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        spSplitPaymentType?.adapter = adapter
     }
 
     private fun initializeSIView() {
@@ -118,6 +171,7 @@ class MainActivity : AppCompatActivity() {
         billingLimitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         et_billingLimit_value.adapter = billingLimitAdapter
     }
+
     private fun setCustomeNote(){
         val noteCategoryAdapter : ArrayAdapter<*> = ArrayAdapter<Any?>(
             this,android.R.layout.simple_spinner_item,noteCategory
@@ -232,6 +286,43 @@ class MainActivity : AppCompatActivity() {
                 .build()
         }
 
+        var splitPaymentDetails : JSONObject? = null
+        if (switchSplitPayment!!.isChecked) {
+            val requestMap: HashMap<String, JSONObject> = HashMap()
+            splitPaymentDetails = JSONObject()
+            try {
+                splitPaymentDetails.put(
+                    PayuConstants.SPLIT_PAYMENT_TYPE,
+                    spSplitPaymentType!!.selectedItem.toString()
+                )
+                val childCount = llSplitPaymentDetails!!.childCount
+                for (i in 0 until childCount) {
+                    val childAt = llSplitPaymentDetails!!.getChildAt(i)
+                    val subAmt = childAt.findViewById<EditText>(R.id.et_sub_amt_value)
+                    val commissionAmt =
+                        childAt.findViewById<EditText>(R.id.et_aggregator_charges_value)
+                    val childKey = childAt.findViewById<EditText>(R.id.et_child_key_value)
+                    if (!subAmt.text.toString().isNullOrEmpty() && !commissionAmt.text.toString().isNullOrEmpty() ) {
+                        val obj = JSONObject()
+                        obj.put(PayuConstants.SPLIT_PAYMENT_AGGREGATOR_SUB_TXN_ID, "ab"+ (1 until 10000).random())
+                        obj.put(
+                            PayuConstants.SPLIT_PAYMENT_AGGREGATOR_SUB_AMOUNT,
+                            subAmt.text.toString()
+                        )
+                        obj.put(
+                            PayuConstants.SPLIT_PAYMENT_AGGREGATOR_CHARGES,
+                            commissionAmt.text.toString()
+                        )
+                        requestMap[childKey.text.toString()] = obj
+                    }
+                }
+                splitPaymentDetails.put(PayuConstants.SPLIT_PAYMENT_INFO, JSONObject(requestMap as Map<String, JSONObject>))
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+        }
+
+
         return PayUPaymentParams.Builder().setAmount(binding.etAmount.text.toString())
             .setIsProduction(binding.radioBtnProduction.isChecked)
             .setKey(binding.etKey.text.toString())
@@ -245,6 +336,7 @@ class MainActivity : AppCompatActivity() {
             .setUserCredential(binding.etUserCredential.text.toString())
             .setAdditionalParams(additionalParamsMap)
             .setPayUSIParams(siDetails)
+            .setSplitPaymentDetails(if(switchSplitPayment!!.isChecked) splitPaymentDetails.toString() else null)
             .build()
     }
 
@@ -289,8 +381,12 @@ class MainActivity : AppCompatActivity() {
 
                         val hashData = map[CP_HASH_STRING]
                         val hashName = map[CP_HASH_NAME]
+                        var salt = binding.etSalt.text.toString()
+                        if (map.containsKey(PayUCheckoutProConstants.CP_POST_SALT))
+                            salt = salt.plus(map[PayUCheckoutProConstants.CP_POST_SALT])
 
                         var hash: String? = null
+
 
                         //Below hash should be calculated only when integrating Multi-currency support. If not integrating MCP
                         // then no need to have this if check.
@@ -299,14 +395,14 @@ class MainActivity : AppCompatActivity() {
                             //Calculate HmacSHA1 hash using the hashData and merchant secret key
                             hash = HashGenerationUtils.generateHashFromSDK(
                                 hashData!!,
-                                binding.etSalt.text.toString(),
+                                salt,
                                 merchantSecretKey
                             )
                         } else {
                             //calculate SDH-512 hash using hashData and salt
                             hash = HashGenerationUtils.generateHashFromSDK(
                                 hashData!!,
-                                binding.etSalt.text.toString()
+                                salt
                             )
                         }
 
