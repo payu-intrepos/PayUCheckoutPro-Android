@@ -18,4 +18,11 @@
     <string name="free_trial">Free Trial</string>
     <string name="custom_note">Custom Note</string>
     <string name="custom_note_category">Note Category</string>
+
+    <string name="split_payment_type">Type</string>
+    <string name="split_payment_amount1">Sub-Merchant Amount</string>
+    <string name="split_payment_commission1">Commission</string>
+    <string name="split_payment_child">Child Key</string>
+
+    <string name="pay_via_split_payment">Pay using Split Payment</string>
 </resources>

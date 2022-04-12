@@ -606,9 +606,12 @@
                             </LinearLayout>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
-                    <include android:id="@+id/custom_note"
+
+                    <include
+                        android:id="@+id/custom_note"
                         layout="@layout/custom_note"
-                        android:visibility="visible"/>
+                        android:visibility="visible" />
+
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -663,6 +666,94 @@
                         </RelativeLayout>
 
 
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dimen_10dp"
+                        android:layout_marginTop="@dimen/dimen_10dp"
+                        android:layout_marginRight="@dimen/dimen_10dp"
+                        android:padding="@dimen/dimen_10dp"
+                        app:cardBackgroundColor="@color/light_white"
+                        app:cardCornerRadius="@dimen/dimen_3dp"
+                        app:cardElevation="@dimen/dimen_5dp"
+                        app:cardPreventCornerOverlap="false"
+                        app:contentPaddingBottom="@dimen/dimen_10dp"
+                        app:contentPaddingLeft="@dimen/dimen_5dp"
+                        app:contentPaddingRight="@dimen/dimen_5dp"
+                        app:contentPaddingTop="@dimen/dimen_10dp"
+                        card_view:cardElevation="@dimen/dimen_5dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <RelativeLayout
+                                android:id="@+id/rl_split_payment_header"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:id="@+id/tv_split_payment"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/pay_via_split_payment"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+
+                                <androidx.appcompat.widget.SwitchCompat
+                                    android:id="@+id/switch_split_payment"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:gravity="right" />
+
+                                <LinearLayout
+                                    android:id="@+id/ll_split_type"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/switch_split_payment"
+                                    android:orientation="horizontal"
+                                    android:visibility="gone">
+
+                                    <EditText
+                                        android:id="@+id/et_split_payment"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="5"
+                                        android:enabled="false"
+                                        android:focusable="false"
+                                        android:text="@string/split_payment_type"
+                                        android:textColor="@android:color/holo_blue_light" />
+
+                                    <androidx.appcompat.widget.AppCompatSpinner
+                                        android:id="@+id/et_split_payment_value"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="5" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/ll_split_payment_details"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/ll_split_type"
+                                    android:orientation="vertical" />
+
+                                <Button
+                                    android:id="@+id/btn_split_more"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/ll_split_payment_details"
+                                    android:layout_centerHorizontal="true"
+                                    android:text="ADD MORE"
+                                    android:visibility="gone" />
+                            </RelativeLayout>
+
+
+                        </RelativeLayout>
                     </androidx.cardview.widget.CardView>
 
                     <Button
