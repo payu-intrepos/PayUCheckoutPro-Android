@@ -4,19 +4,23 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EdgeEffect;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -36,14 +40,19 @@ import com.payu.base.models.PayuBillingRule;
 import com.payu.checkoutpro.PayUCheckoutPro;
 import com.payu.checkoutpro.models.PayUCheckoutProConfig;
 import com.payu.checkoutpro.utils.PayUCheckoutProConstants;
+import com.payu.paymentparamhelper.PayuConstants;
 import com.payu.sampleapp.databinding.ActivityMainBinding;
 import com.payu.ui.model.listeners.PayUCheckoutProListener;
 import com.payu.ui.model.listeners.PayUHashGenerationListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.Key;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -61,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Enter below keys when integrating Multi Currency Payments.
      * To get these credentials, please reach out to your Key Account Manager at PayU
-     * */
+     */
     private final String testMerchantAccessKey = "<Please_add_your_merchant_access_key>";
     private final String testMerchantSecretKey = "<Please_add_your_merchant_secret_key>";
 
@@ -70,19 +79,71 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private long mLastClickTime;
     private ReviewOrderRecyclerViewAdapter reviewOrderAdapter;
-    private final String[] billingCycle = {  "DAILY", "WEEKLY", "MONTHLY", "YEARLY", "ONCE", "ADHOC"};
+    private final String[] billingCycle = {"DAILY", "WEEKLY", "MONTHLY", "YEARLY", "ONCE", "ADHOC"};
     private final String[] billingRule = {"MAX", "EXACT"};
     private final String[] billingLimit = {"ON", "BEFORE", "AFTER"};
     private final String[] noteCategory = {"CARD", "NB", "WALLET", "UPI", "EMI", "COMMON", "NULL"};
+
+    private final String[] splitPaymentType = {
+            "absolute",
+            "percentage"
+    };
+
+
+    private SwitchCompat switchSplitPayment;
+    private AppCompatSpinner spSplitPaymentType;
+    private LinearLayout llSplitPaymentDetails;
+    private Button btnSplitMore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         initializeSIView();
+        initializeSplitPaymentViews();
         setCustomeNote();
         setInitalData();
         initListeners();
+    }
+
+    private void addSplitPaymentDetailedView() {
+        View view =
+                LayoutInflater.from(this).inflate(R.layout.layout_split_payment_details, null);
+        llSplitPaymentDetails.addView(view, llSplitPaymentDetails.getChildCount());
+    }
+
+    private void initializeSplitPaymentViews() {
+        switchSplitPayment = findViewById(R.id.switch_split_payment);
+        llSplitPaymentDetails = findViewById(R.id.ll_split_payment_details);
+        btnSplitMore = findViewById(R.id.btn_split_more);
+
+        switchSplitPayment.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            addSplitPaymentDetailedView();
+            if (isChecked) {
+                findViewById(R.id.ll_split_type).setVisibility(View.VISIBLE);
+                findViewById(R.id.ll_split_payment_details).setVisibility(View.VISIBLE);
+                btnSplitMore.setVisibility(View.VISIBLE);
+            } else {
+                findViewById(R.id.ll_split_type).setVisibility(View.GONE);
+                findViewById(R.id.ll_split_payment_details).setVisibility(View.GONE);
+                llSplitPaymentDetails.removeAllViews();
+                btnSplitMore.setVisibility(View.GONE);
+            }
+        });
+
+        btnSplitMore.setOnClickListener(view -> addSplitPaymentDetailedView());
+
+        spSplitPaymentType = findViewById(R.id.et_split_payment_value);
+
+
+        ArrayAdapter<Object> adapter = new ArrayAdapter<Object>(
+                this,
+                android.R.layout.simple_spinner_item,
+                splitPaymentType
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spSplitPaymentType.setAdapter(adapter);
     }
 
     private void initializeSIView() {
@@ -100,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                 billingCycle
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ((AppCompatSpinner)findViewById(R.id.et_billingCycle_value)).setAdapter(adapter);
+        ((AppCompatSpinner) findViewById(R.id.et_billingCycle_value)).setAdapter(adapter);
 
         ArrayAdapter<String> billingRuleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, billingRule);
         billingRuleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -111,10 +172,10 @@ public class MainActivity extends AppCompatActivity {
         binding.layoutSiDetails.etBillingLimitValue.setAdapter(billingLimitAdapter);
     }
 
-    private void setCustomeNote(){
-        ArrayAdapter<String> noteCategoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,noteCategory);
+    private void setCustomeNote() {
+        ArrayAdapter<String> noteCategoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, noteCategory);
         noteCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ((AppCompatSpinner)findViewById(R.id.et_custom_note_category_value)).setAdapter(noteCategoryAdapter);
+        ((AppCompatSpinner) findViewById(R.id.et_custom_note_category_value)).setAdapter(noteCategoryAdapter);
     }
 
     private void setInitalData() {
@@ -155,12 +216,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        binding.btnAddItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                reviewOrderAdapter.addRow();
-            }
-        });
+        binding.btnAddItem.setOnClickListener(view -> reviewOrderAdapter.addRow());
     }
 
     private void hideReviewOrderView() {
@@ -237,8 +293,13 @@ public class MainActivity extends AppCompatActivity {
                         String hashData = valueMap.get(PayUCheckoutProConstants.CP_HASH_STRING);
                         if (!TextUtils.isEmpty(hashName) && !TextUtils.isEmpty(hashData)) {
                             //Generate Hash from your backend here
+                            String salt = binding.etSalt.getText().toString();
+                            if (valueMap.containsKey(PayUCheckoutProConstants.CP_POST_SALT))
+                                salt = salt + "" + (valueMap.get(PayUCheckoutProConstants.CP_POST_SALT));
+
+
                             String hash = null;
-                            if (hashName.equalsIgnoreCase(PayUCheckoutProConstants.CP_LOOKUP_API_HASH)){
+                            if (hashName.equalsIgnoreCase(PayUCheckoutProConstants.CP_LOOKUP_API_HASH)) {
                                 //Calculate HmacSHA1 HASH for calculating Lookup API Hash
                                 ///Do not generate hash from local, it needs to be calculated from server side only. Here, hashString contains hash created from your server side.
 
@@ -246,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
                             } else {
 
                                 //Calculate SHA-512 Hash here
-                                hash = calculateHash(hashData + binding.etSalt.getText().toString());
+                                hash = calculateHash(hashData + salt);
                             }
 
                             HashMap<String, String> dataMap = new HashMap<>();
@@ -285,13 +346,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ArrayList<HashMap<String, String>> getEnforcePaymentList() {
-        ArrayList<HashMap<String,String>> enforceList = new ArrayList();
-       HashMap<String,String> map1 = new HashMap<>();
+        ArrayList<HashMap<String, String>> enforceList = new ArrayList();
+        HashMap<String, String> map1 = new HashMap<>();
         map1.put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.NB.name());
         map1.put(PayUCheckoutProConstants.ENFORCED_IBIBOCODE, "AXIB");
         enforceList.add(map1);
 
-        HashMap<String,String> map2 = new HashMap<>();
+        HashMap<String, String> map2 = new HashMap<>();
         map2.put(PayUCheckoutProConstants.CP_PAYMENT_TYPE, PaymentType.CARD.name());
         map2.put(PayUCheckoutProConstants.CP_CARD_TYPE, CardType.CC.name());
         map2.put(PayUCheckoutProConstants.CP_CARD_SCHEME, CardScheme.MAST.name());
@@ -336,8 +397,8 @@ public class MainActivity extends AppCompatActivity {
         return checkoutOrderList;
     }
 
-    private void showAlertDialog(Object response){
-        HashMap<String,Object> result = (HashMap<String, Object>) response;
+    private void showAlertDialog(Object response) {
+        HashMap<String, Object> result = (HashMap<String, Object>) response;
         new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setMessage(
@@ -345,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
                                 PayUCheckoutProConstants.CP_MERCHANT_RESPONSE
                         )
                 )
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener(){
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
@@ -370,8 +431,8 @@ public class MainActivity extends AppCompatActivity {
 //        additionalParams.put(PayUCheckoutProConstants.SODEXO_SOURCE_ID, sodexosrcid);
 
         PayUSIParams siDetails = null;
-        if(binding.switchSiOnOff.isChecked()) {
-            siDetails  = new PayUSIParams.Builder().setIsFreeTrial(binding.layoutSiDetails.spFreeTrial.isChecked())
+        if (binding.switchSiOnOff.isChecked()) {
+            siDetails = new PayUSIParams.Builder().setIsFreeTrial(binding.layoutSiDetails.spFreeTrial.isChecked())
                     .setBillingAmount(binding.layoutSiDetails.etBillingAmountValue.getText().toString())
                     .setBillingCycle(PayUBillingCycle.valueOf(binding.layoutSiDetails.etBillingCycleValue.getSelectedItem().toString()))
                     .setBillingInterval(Integer.parseInt(binding.layoutSiDetails.etBillingIntervalValue.getText().toString()))
@@ -383,6 +444,42 @@ public class MainActivity extends AppCompatActivity {
                     .build();
 
         }
+
+        JSONObject splitPaymentDetails = new JSONObject();
+        if (switchSplitPayment.isChecked()) {
+            Map<String, JSONObject> requestMap = new HashMap<String, JSONObject>();
+            splitPaymentDetails = new JSONObject();
+            try {
+                splitPaymentDetails.put(
+                        PayuConstants.SPLIT_PAYMENT_TYPE,
+                        spSplitPaymentType.getSelectedItem().toString());
+                int childCount = llSplitPaymentDetails.getChildCount();
+                for (int i = 0; i < childCount; i++) {
+                    View childAt = llSplitPaymentDetails.getChildAt(i);
+                    EditText subAmt = childAt.findViewById(R.id.et_sub_amt_value);
+
+                    EditText commissionAmt = childAt.findViewById(R.id.et_aggregator_charges_value);
+                    EditText childKey = childAt.findViewById(R.id.et_child_key_value);
+                    if (!subAmt.getText().toString().isEmpty() && !commissionAmt.getText().toString().isEmpty()) {
+                        JSONObject obj = new JSONObject();
+                        obj.put(PayuConstants.SPLIT_PAYMENT_AGGREGATOR_SUB_TXN_ID, "ab" + ((int) (Math.random() * (400 - 200 + 1) + 200)));
+                        obj.put(
+                                PayuConstants.SPLIT_PAYMENT_AGGREGATOR_SUB_AMOUNT,
+                                subAmt.getText().toString()
+                        );
+                        obj.put(
+                                PayuConstants.SPLIT_PAYMENT_AGGREGATOR_CHARGES,
+                                commissionAmt.getText().toString()
+                        );
+                        requestMap.put(childKey.getText().toString(), obj);
+                    }
+                }
+                splitPaymentDetails.put(PayuConstants.SPLIT_PAYMENT_INFO, new JSONObject(requestMap));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
 
         PayUPaymentParams.Builder builder = new PayUPaymentParams.Builder();
         builder.setAmount(binding.etAmount.getText().toString())
@@ -397,31 +494,32 @@ public class MainActivity extends AppCompatActivity {
                 .setFurl(binding.etFurl.getText().toString())
                 .setUserCredential(binding.etKey.getText().toString() + ":john@yopmail.com")
                 .setAdditionalParams(additionalParams)
-                .setPayUSIParams(siDetails);
+                .setPayUSIParams(siDetails)
+                .setSplitPaymentDetails(switchSplitPayment.isChecked() ? splitPaymentDetails.toString() : null);
         PayUPaymentParams payUPaymentParams = builder.build();
         return payUPaymentParams;
     }
 
     /**
      * Hash Should be generated from your sever side only.
-     *
+     * <p>
      * Do not use this, you may use this only for testing.
      * This should be done from server side..
      * Do not keep salt anywhere in app.
-     * */
+     */
     private String calculateHash(String hashString) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
             messageDigest.update(hashString.getBytes());
             byte[] mdbytes = messageDigest.digest();
             return getHexString(mdbytes);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return "";
         }
     }
 
-    private String getHexString(byte[] array){
+    private String getHexString(byte[] array) {
         StringBuilder hash = new StringBuilder();
         for (byte hashByte : array) {
             hash.append(Integer.toString((hashByte & 0xff) + 0x100, 16).substring(1));
@@ -431,11 +529,11 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Hash Should be generated from your sever side only.
-     *
+     * <p>
      * Do not use this, you may use this only for testing.
      * This should be done from server side..
      * Do not keep salt anywhere in app.
-     * */
+     */
     private String calculateHmacSHA1Hash(String data, String key) {
         String HMAC_SHA1_ALGORITHM = "HmacSHA1";
         String result = null;
@@ -446,39 +544,37 @@ public class MainActivity extends AppCompatActivity {
             mac.init(signingKey);
             byte[] rawHmac = mac.doFinal(data.getBytes());
             result = getHexString(rawHmac);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return result;
     }
 
-    public ArrayList<CustomNote> getCustomeNoteList(){
+    public ArrayList<CustomNote> getCustomeNoteList() {
 
         ArrayList<CustomNote> customNote = new ArrayList<>();
-       if(!(((AppCompatSpinner)findViewById(R.id.et_custom_note_category_value)).getSelectedItem().toString().equalsIgnoreCase("NULL") && ((AppCompatSpinner)findViewById(R.id.et_custom_note_category_value)).getSelectedItem().toString().equalsIgnoreCase("COMMON"))){
+        if (!(((AppCompatSpinner) findViewById(R.id.et_custom_note_category_value)).getSelectedItem().toString().equalsIgnoreCase("NULL") && ((AppCompatSpinner) findViewById(R.id.et_custom_note_category_value)).getSelectedItem().toString().equalsIgnoreCase("COMMON"))) {
             ArrayList<PaymentType> noteCategory = new ArrayList<>();
-            noteCategory.add( PaymentType.valueOf(((AppCompatSpinner)findViewById(R.id.et_custom_note_category_value)).getSelectedItem().toString()));
-            CustomNote customNote1 = new CustomNote(((EditText)findViewById(R.id.et_custom_note_value)).getText().toString(), noteCategory);
-            customNote1.setCustom_note(((EditText)findViewById(R.id.et_custom_note_value)).getText().toString());
+            noteCategory.add(PaymentType.valueOf(((AppCompatSpinner) findViewById(R.id.et_custom_note_category_value)).getSelectedItem().toString()));
+            CustomNote customNote1 = new CustomNote(((EditText) findViewById(R.id.et_custom_note_value)).getText().toString(), noteCategory);
+            customNote1.setCustom_note(((EditText) findViewById(R.id.et_custom_note_value)).getText().toString());
             customNote1.setCustom_note_category(noteCategory);
             customNote.add(customNote1);
-        }
-        else if(((AppCompatSpinner)findViewById(R.id.et_custom_note_category_value)).getSelectedItem().toString().equalsIgnoreCase("NULL")){
-            CustomNote customNote1 = new CustomNote(((EditText)findViewById(R.id.et_custom_note_value)).getText().toString(), null);
-            customNote1.setCustom_note(((EditText)findViewById(R.id.et_custom_note_value)).getText().toString());
+        } else if (((AppCompatSpinner) findViewById(R.id.et_custom_note_category_value)).getSelectedItem().toString().equalsIgnoreCase("NULL")) {
+            CustomNote customNote1 = new CustomNote(((EditText) findViewById(R.id.et_custom_note_value)).getText().toString(), null);
+            customNote1.setCustom_note(((EditText) findViewById(R.id.et_custom_note_value)).getText().toString());
             customNote1.setCustom_note_category(null);
             customNote.add(customNote1);
-        }else {
+        } else {
             ArrayList<PaymentType> noteCategory = new ArrayList<>();
-            noteCategory.add( PaymentType.CARD);
+            noteCategory.add(PaymentType.CARD);
             noteCategory.add(PaymentType.NB);
             noteCategory.add(PaymentType.UPI);
             noteCategory.add(PaymentType.WALLET);
             noteCategory.add(PaymentType.EMI);
-            CustomNote customNote1 = new CustomNote(((EditText)findViewById(R.id.et_custom_note_value)).getText().toString(), noteCategory);
-            customNote1.setCustom_note(((EditText)findViewById(R.id.et_custom_note_value)).getText().toString());
+            CustomNote customNote1 = new CustomNote(((EditText) findViewById(R.id.et_custom_note_value)).getText().toString(), noteCategory);
+            customNote1.setCustom_note(((EditText) findViewById(R.id.et_custom_note_value)).getText().toString());
             customNote1.setCustom_note_category(noteCategory);
             customNote.add(customNote1);
         }
