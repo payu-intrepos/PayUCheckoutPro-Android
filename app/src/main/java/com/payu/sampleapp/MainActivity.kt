@@ -21,6 +21,8 @@ import com.payu.checkoutpro.models.PayUCheckoutProConfig
 import com.payu.checkoutpro.utils.PayUCheckoutProConstants
 import com.payu.checkoutpro.utils.PayUCheckoutProConstants.CP_HASH_NAME
 import com.payu.checkoutpro.utils.PayUCheckoutProConstants.CP_HASH_STRING
+import com.payu.checkoutpro.utils.PayUCheckoutProConstants.CP_HASH_TYPE
+import com.payu.checkoutpro.utils.PayUCheckoutProConstants.CP_V2_HASH
 import com.payu.paymentparamhelper.PayuConstants
 import com.payu.sampleapp.databinding.ActivityMainBinding
 import com.payu.ui.model.listeners.PayUCheckoutProListener
@@ -381,6 +383,8 @@ class MainActivity : AppCompatActivity() {
 
                         val hashData = map[CP_HASH_STRING]
                         val hashName = map[CP_HASH_NAME]
+                        val hashType = map[CP_HASH_TYPE]
+
                         var salt = binding.etSalt.text.toString()
                         if (map.containsKey(PayUCheckoutProConstants.CP_POST_SALT))
                             salt = salt.plus(map[PayUCheckoutProConstants.CP_POST_SALT])
@@ -398,6 +402,8 @@ class MainActivity : AppCompatActivity() {
                                 salt,
                                 merchantSecretKey
                             )
+                        }else if (hashType.equals(CP_V2_HASH)){
+                            hash = HashGenerationUtils.generateV2HashFromSDK(hashData!!,binding.etSalt.text.toString())
                         } else {
                             //calculate SDH-512 hash using hashData and salt
                             hash = HashGenerationUtils.generateHashFromSDK(
@@ -422,7 +428,6 @@ class MainActivity : AppCompatActivity() {
     private fun getCheckoutProConfig(): PayUCheckoutProConfig {
         val checkoutProConfig = PayUCheckoutProConfig()
         checkoutProConfig.paymentModesOrder = getCheckoutOrderList()
-        checkoutProConfig.offerDetails = getOfferDetailsList()
         checkoutProConfig.showCbToolbar = !binding.switchHideCbToolBar.isChecked
         checkoutProConfig.autoSelectOtp = binding.switchAutoSelectOtp.isChecked
         checkoutProConfig.autoApprove = binding.switchAutoApprove.isChecked
@@ -457,27 +462,6 @@ class MainActivity : AppCompatActivity() {
         return enforceList
     }
 
-    private fun getOfferDetailsList(): ArrayList<PayUOfferDetails> {
-        val offerDetails = ArrayList<PayUOfferDetails>()
-        offerDetails.add(PayUOfferDetails().also {
-            it.offerTitle = " Instant discount of Rs.2"
-            it.offerDescription = "Get Instant dicount of Rs.2 on all Credit and Debit card transactions"
-            it.offerKey = "OfferKey@9227"
-            it.offerPaymentTypes = ArrayList<PaymentType>().also {
-                it.add(PaymentType.CARD)
-            }
-        })
-        offerDetails.add(PayUOfferDetails().also {
-            it.offerTitle = " Instant discount of Rs.2"
-            it.offerDescription = "Get Instant dicount of Rs.2 on all NetBanking transactions"
-            it.offerKey = "TestOffer100@9229"
-            it.offerPaymentTypes = ArrayList<PaymentType>().also {
-                it.add(PaymentType.NB)
-            }
-        })
-
-        return offerDetails
-    }
 
     private fun getCheckoutOrderList(): ArrayList<PaymentMode> {
         val checkoutOrderList = ArrayList<PaymentMode>()

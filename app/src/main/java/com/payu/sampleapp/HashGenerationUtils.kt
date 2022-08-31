@@ -1,5 +1,7 @@
 package com.payu.sampleapp
 
+import android.util.Base64
+import android.util.Base64.NO_WRAP
 import java.security.MessageDigest
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -19,6 +21,9 @@ Do not keep salt anywhere in app.
 
         return if (merchantSecretKey.isNullOrEmpty()) calculateHash("$hashData$salt")
         else calculateHmacSha1(hashData, merchantSecretKey)
+    }
+    fun generateV2HashFromSDK(hashString: String,salt: String?):String?{
+        return  calculateHmacSha256(hashString,salt)
     }
 
     /**
@@ -57,5 +62,17 @@ Do not keep salt anywhere in app.
             hexString.append(h)
         }
         return hexString.toString()
+    }
+    private fun calculateHmacSha256(hashString: String, salt: String?): String? {
+        return try {
+            val type = "HmacSHA256"
+            val secret = SecretKeySpec(salt?.toByteArray(), type)
+            val mac: Mac = Mac.getInstance(type)
+            mac.init(secret)
+            val bytes: ByteArray = mac.doFinal(hashString.toByteArray())
+            return Base64.encodeToString(bytes, NO_WRAP)
+        } catch (e: Exception){
+            null
+        }
     }
 }
