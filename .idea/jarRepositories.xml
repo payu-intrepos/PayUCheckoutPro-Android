@@ -26,10 +26,5 @@
       <option name="name" value="maven" />
       <option name="url" value="https://phonepe.bintray.com/PhonePeIntentSDK" />
     </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven" />
-      <option name="name" value="maven" />
-      <option name="url" value="https://phonepe.mycloudrepo.io/public/repositories/phonepe-intentsdk-android" />
-    </remote-repository>
   </component>
 </project>
