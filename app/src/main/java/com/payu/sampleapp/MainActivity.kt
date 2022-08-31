@@ -339,6 +339,8 @@ class MainActivity : AppCompatActivity() {
             .setAdditionalParams(additionalParamsMap)
             .setPayUSIParams(siDetails)
             .setSplitPaymentDetails(if(switchSplitPayment!!.isChecked) splitPaymentDetails.toString() else null)
+                // pass here unique usertoken for user
+            .setUserToken("anshul123")
             .build()
     }
 

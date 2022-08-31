@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PayUCheckoutProSampleApp.iml" filepath="$PROJECT_DIR$/.idea/modules/PayUCheckoutProSampleApp.iml" group="PayUCheckoutProSampleApp" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="PayUCheckoutProSampleApp/app" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PayUCheckoutProSampleApp.iml" filepath="$PROJECT_DIR$/.idea/modules/PayUCheckoutProSampleApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/PayUCheckoutProSampleApp.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/PayUCheckoutProSampleApp.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/PayUCheckoutProSampleApp.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/PayUCheckoutProSampleApp.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/PayUCheckoutProSampleApp.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/PayUCheckoutProSampleApp.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/PayUCheckoutProSampleApp.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/PayUCheckoutProSampleApp.app.unitTest.iml" />
     </modules>
   </component>
 </project>
