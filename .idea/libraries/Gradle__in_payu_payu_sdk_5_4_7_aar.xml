@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: in.payu:payu-sdk:5.4.7@aar">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/eba8a4be329fa0ada4e526c42bbb7029/jetified-payu-sdk-5.4.7/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/eba8a4be329fa0ada4e526c42bbb7029/jetified-payu-sdk-5.4.7/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/eba8a4be329fa0ada4e526c42bbb7029/jetified-payu-sdk-5.4.7/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
