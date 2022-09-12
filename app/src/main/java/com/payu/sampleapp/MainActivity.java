@@ -1,9 +1,12 @@
 package com.payu.sampleapp;
 
+import static android.util.Base64.NO_WRAP;
+
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
@@ -30,7 +33,6 @@ import com.payu.base.models.CardType;
 import com.payu.base.models.CustomNote;
 import com.payu.base.models.ErrorResponse;
 import com.payu.base.models.PayUBillingCycle;
-import com.payu.base.models.PayUOfferDetails;
 import com.payu.base.models.PayUPaymentParams;
 import com.payu.base.models.PayUSIParams;
 import com.payu.base.models.PaymentMode;
@@ -48,6 +50,7 @@ import com.payu.ui.model.listeners.PayUHashGenerationListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -291,6 +294,7 @@ public class MainActivity extends AppCompatActivity {
                     public void generateHash(HashMap<String, String> valueMap, PayUHashGenerationListener hashGenerationListener) {
                         String hashName = valueMap.get(PayUCheckoutProConstants.CP_HASH_NAME);
                         String hashData = valueMap.get(PayUCheckoutProConstants.CP_HASH_STRING);
+                        String hashType = valueMap.get(PayUCheckoutProConstants.CP_HASH_TYPE);
                         if (!TextUtils.isEmpty(hashName) && !TextUtils.isEmpty(hashData)) {
                             //Generate Hash from your backend here
                             String salt = binding.etSalt.getText().toString();
@@ -304,7 +308,9 @@ public class MainActivity extends AppCompatActivity {
                                 ///Do not generate hash from local, it needs to be calculated from server side only. Here, hashString contains hash created from your server side.
 
                                 hash = calculateHmacSHA1Hash(hashData, testMerchantSecretKey);
-                            } else {
+                            } else if (hashType.equalsIgnoreCase(PayUCheckoutProConstants.CP_V2_HASH)){
+                                 hash = calculateHmacSha256(hashData,testSalt);
+                            }else {
 
                                 //Calculate SHA-512 Hash here
                                 hash = calculateHash(hashData + salt);
@@ -326,7 +332,8 @@ public class MainActivity extends AppCompatActivity {
     private PayUCheckoutProConfig getCheckoutProConfig() {
         PayUCheckoutProConfig checkoutProConfig = new PayUCheckoutProConfig();
         checkoutProConfig.setPaymentModesOrder(getCheckoutOrderList());
-        checkoutProConfig.setOfferDetails(getOfferDetailsList());
+        // not supporting above 1.8.5 version of checkouPro, above this no itegration change required for offer
+//        checkoutProConfig.setOfferDetails(getOfferDetailsList());
         // uncomment below code for performing enforcement
 //        checkoutProConfig.setEnforcePaymentList(getEnforcePaymentList());
         checkoutProConfig.setShowCbToolbar(!binding.switchHideCbToolBar.isChecked());
@@ -360,30 +367,30 @@ public class MainActivity extends AppCompatActivity {
         return enforceList;
     }
 
-    private ArrayList<PayUOfferDetails> getOfferDetailsList() {
-        ArrayList<PayUOfferDetails> offerDetails = new ArrayList<>();
-        PayUOfferDetails payUOfferDetails1 = new PayUOfferDetails();
-        payUOfferDetails1.setOfferTitle("Instant discount of Rs.2");
-        payUOfferDetails1.setOfferDescription("Get Instant dicount of Rs.2 on all Credit and Debit card transactions");
-        payUOfferDetails1.setOfferKey("OfferKey@9227");
-
-        ArrayList<PaymentType> offerPaymentTypes1 = new ArrayList<>();
-        offerPaymentTypes1.add(PaymentType.CARD);
-        payUOfferDetails1.setOfferPaymentTypes(offerPaymentTypes1);
-
-        PayUOfferDetails payUOfferDetails2 = new PayUOfferDetails();
-        payUOfferDetails2.setOfferTitle("Instant discount of Rs.2");
-        payUOfferDetails2.setOfferDescription("Get Instant dicount of Rs.2 on all NetBanking transactions");
-        payUOfferDetails2.setOfferKey("TestOffer100@9229");
-
-        ArrayList<PaymentType> offerPaymentTypes2 = new ArrayList<>();
-        offerPaymentTypes2.add(PaymentType.NB);
-        payUOfferDetails2.setOfferPaymentTypes(offerPaymentTypes2);
-
-        offerDetails.add(payUOfferDetails1);
-        offerDetails.add(payUOfferDetails2);
-        return offerDetails;
-    }
+//    private ArrayList<PayUOfferDetails> getOfferDetailsList() {
+//        ArrayList<PayUOfferDetails> offerDetails = new ArrayList<>();
+//        PayUOfferDetails payUOfferDetails1 = new PayUOfferDetails();
+//        payUOfferDetails1.setOfferTitle("Instant discount of Rs.2");
+//        payUOfferDetails1.setOfferDescription("Get Instant dicount of Rs.2 on all Credit and Debit card transactions");
+//        payUOfferDetails1.setOfferKey("OfferKey@9227");
+//
+//        ArrayList<PaymentType> offerPaymentTypes1 = new ArrayList<>();
+//        offerPaymentTypes1.add(PaymentType.CARD);
+//        payUOfferDetails1.setOfferPaymentTypes(offerPaymentTypes1);
+//
+//        PayUOfferDetails payUOfferDetails2 = new PayUOfferDetails();
+//        payUOfferDetails2.setOfferTitle("Instant discount of Rs.2");
+//        payUOfferDetails2.setOfferDescription("Get Instant dicount of Rs.2 on all NetBanking transactions");
+//        payUOfferDetails2.setOfferKey("TestOffer100@9229");
+//
+//        ArrayList<PaymentType> offerPaymentTypes2 = new ArrayList<>();
+//        offerPaymentTypes2.add(PaymentType.NB);
+//        payUOfferDetails2.setOfferPaymentTypes(offerPaymentTypes2);
+//
+//        offerDetails.add(payUOfferDetails1);
+//        offerDetails.add(payUOfferDetails2);
+//        return offerDetails;
+//    }
 
     private ArrayList<PaymentMode> getCheckoutOrderList() {
         ArrayList<PaymentMode> checkoutOrderList = new ArrayList();
@@ -549,6 +556,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return result;
+    }
+
+    private String calculateHmacSha256( String hashString,  String salt) {
+        String HMAC_SHA256_ALGORITHM = "HmacSHA256";
+        String result = null;
+         try {
+             SecretKeySpec secret = new SecretKeySpec(salt.getBytes(StandardCharsets.UTF_8), HMAC_SHA256_ALGORITHM);
+              Mac mac= Mac.getInstance(HMAC_SHA256_ALGORITHM);
+            mac.init(secret);
+             byte[] bytes = mac.doFinal(hashString.getBytes(StandardCharsets.UTF_8));
+            result = Base64.encodeToString(bytes, NO_WRAP);
+        } catch (Exception e){
+            result = null;
+        }
+         return  result;
     }
 
     public ArrayList<CustomNote> getCustomeNoteList() {
