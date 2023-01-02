@@ -366,7 +366,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onError(errorResponse: ErrorResponse) {
 
                     val errorMessage: String
-                    if (errorResponse != null && errorResponse.errorMessage != null && errorResponse.errorMessage!!.isNotEmpty())
+                    if (errorResponse.errorMessage != null && errorResponse.errorMessage!!.isNotEmpty())
                         errorMessage = errorResponse.errorMessage!!
                     else
                         errorMessage = resources.getString(R.string.some_error_occurred)
@@ -391,7 +391,7 @@ class MainActivity : AppCompatActivity() {
                         if (map.containsKey(PayUCheckoutProConstants.CP_POST_SALT))
                             salt = salt.plus(map[PayUCheckoutProConstants.CP_POST_SALT])
 
-                        var hash: String? = null
+                        var hash: String?
 
 
                         //Below hash should be calculated only when integrating Multi-currency support. If not integrating MCP
@@ -543,7 +543,7 @@ class MainActivity : AppCompatActivity() {
             customNote.add(CustomNote(et_custom_note_value.text.toString(),noteCategory))
         }
 
-        return customNote;
+        return customNote
     }
 
 }
