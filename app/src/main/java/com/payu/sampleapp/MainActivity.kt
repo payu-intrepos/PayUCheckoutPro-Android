@@ -38,8 +38,8 @@ class MainActivity : AppCompatActivity() {
     private val email: String = "snooze@payu.in"
     private val phone = "9999999999"
     private val merchantName = "RH Group"
-    private val surl = "https://payu.herokuapp.com/success"
-    private val furl = "https://payu.herokuapp.com/failure"
+    private val surl = "https://cbjs.payu.in/sdk/success"
+    private val furl = "https://cbjs.payu.in/sdk/failure"
     private val amount = "1.0"
 
     //Test Key and Salt
