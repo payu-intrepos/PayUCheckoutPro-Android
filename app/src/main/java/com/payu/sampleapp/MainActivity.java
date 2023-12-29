@@ -65,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
     private final String email = "snooze@payu.in";
     private final String phone = "9999999999";
     private final String merchantName = "RH Group";
-    private final String surl = "https://payu.herokuapp.com/success";
-    private final String furl = "https://payu.herokuapp.com/failure";
+    private final String surl = "https://cbjs.payu.in/sdk/success";
+    private final String furl = "https://cbjs.payu.in/sdk/failure";
     private final String amount = "1.0";
     private final String testKey = "IUIaFM";
     private final String testSalt = "<Please_add_salt_here>";
